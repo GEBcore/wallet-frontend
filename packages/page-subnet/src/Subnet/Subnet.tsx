@@ -26,6 +26,8 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { systemChain } = useApi();
   const [selectedInfo, setSelectedInfo] = useState<SubnetInfo | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
   const [filter, setFilter] = useState('');
   const [subnets, setSubnets] = useState<SubnetInfo[]>([]);
 
@@ -107,7 +109,10 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
             {filterSubnets(subnets)?.map((subnet) => (
               <tr
                 key={subnet.netuid}
-                onClick={() => setSelectedInfo(subnet)}
+                onClick={() => {
+                  setSelectedInfo(subnet)
+                  setSelectedId(subnet.netuid)
+                }}
                 style={{
                   height: '70px',
                   cursor: 'pointer'
@@ -129,7 +134,7 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
         </div>
       ) : (
         <SubnetDetail
-          selectedInfo={selectedInfo}
+          selectedId={selectedId}
           onClose={() => setSelectedInfo(null)}
         />
       )}

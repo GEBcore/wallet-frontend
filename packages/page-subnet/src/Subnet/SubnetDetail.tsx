@@ -1,72 +1,113 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../translate.js';
 import { Button, CardSummary, Input, InputAddress, SummaryBox, Table } from '@polkadot/react-components';
-import { callXAgereRpc } from '../callXAgereRpc.js';
-import { useApi, useToggle } from '@polkadot/react-hooks';
+import { useApi } from '@polkadot/react-hooks';
 import SubnetInfoTr from './SubnetInfoTr.js';
-import { SubnetInfo } from './Subnet.js';
 import { asciiToString, formatBEVM } from '../Utils/formatBEVM.js';
+import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 
 interface Props {
   className?: string;
-  selectedInfo: SubnetInfo;
+  selectedId: number;
   onClose: () => void;
 }
 
-interface NeuronInfo {
+interface NeuronInfoItem {
+  userType: string;
+  totalStake: number;
   hotkey: string;
   coldkey: string;
-  uid: number;
-  netuid: number;
+  uid: 1;
+  netuid: 1;
   active: boolean;
-  axon_info: {
+  axonInfo: {
     ip: string;
     port: number;
-    ip_type: number;
+    ipType:number;
     protocol: number;
-    placeholder1: number;
-    placeholder2: number;
+    placeholder1:number;
+    placeholder2:number;
   };
-  prometheus_info: {
+  prometheusInfo: {
     ip: string;
     port: number;
   };
-  stake: [string, string][];
-  rank: number;
-  emission: string;
+  rank:number;
+  emission:number;
   incentive: number;
-  consensus: number;
+  consensus:number;
   trust: number;
-  validator_trust: number;
+  validatorTrust: number;
   dividends: number;
-  last_update: number;
-  validator_permit: boolean;
-  pruning_score: number;
+  lastUpdate: number;
+  validatorPermit: boolean
+  pruningScore: number;
+}
+interface NeuronInfo {
+  auditorCount: number;
+  minerCount: number;
+  data:NeuronInfoItem[]
 }
 
-function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactElement<Props> {
+interface SubnetInfo {
+  netuid: number;
+  rho: number;
+  kappa: number;
+  difficulty: number;
+  immunityPeriod: number;
+  maxAllowedValidators: number;
+  minAllowedWeights: number;
+  maxWeightsLimit: number;
+  scalingLawPower: number;
+  subnetworkN: number;
+  maxAllowedUids: number;
+  blocksSinceLastStep: number;
+  tempo: number;
+  networkModality: number;
+  emissionValues: number;
+  burn: number;
+  recycled: number;
+  owner: string;
+  identity: {
+    subnetName: string;
+    githubRepo: string;
+    subnetContact: string;
+  }
+}
+
+function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [neurons, setNeurons] = useState<NeuronInfo[]>([]);
+  const [subnet, setSubnet] = useState<SubnetInfo | null>(null)
+  const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
   const { systemChain } = useApi();
-  const GITHUB_REPO = selectedInfo?.identity?.github_repo ? asciiToString(selectedInfo.identity.github_repo) : '-'
 
-  useEffect(() => {
-    callXAgereRpc('xagere_getNeuronsLite', [selectedInfo.netuid], systemChain)
-      .then((response) => {
-        console.log('response', response);
-        // Sort neurons by total stake from high to low
-
-        if (Array.isArray(response)) {
-          const formatRep = response.sort((a, b) => {
-          const totalStakeA = a.stake.reduce((sum, [_, amount]) => sum + Number(amount), 0);
-          const totalStakeB = b.stake.reduce((sum, [_, amount]) => sum + Number(amount), 0);
-          return totalStakeB - totalStakeA;
-        });
-        setNeurons(formatRep);
-        }
+  const fetchSubnetInfo = (id: number) => {
+    axiosXAgereRpc('/xagere/getSubnetDetail', {netuid:id}, systemChain)
+      .then(response => {
+        console.log('/xagere/getSubnetDetail Response:', response);
+        setSubnet(response)
       })
-      .catch(console.error);
-  }, [selectedInfo, systemChain]);
+      .catch(error => {
+        console.error('/xagere/getSubnetDetail Error:', error);
+      });
+  }
+
+  const fetchNeuronsList = (id: number) => {
+    axiosXAgereRpc('/xagere/getNeurons', {netuid:id}, systemChain)
+      .then(response => {
+        console.log('/xagere/getNeurons Response:', response);
+        setNeuronsList(response);
+      })
+      .catch(error => {
+        console.error('/xagere/getNeurons Error:', error);
+      });
+  }
+
+  useEffect((): void => {
+    if(!systemChain) return
+    fetchSubnetInfo(selectedId)
+    fetchNeuronsList(selectedId)
+  }, [systemChain, selectedId]);
 
   const header = [
     [t('Pos'), 'start'],
@@ -80,9 +121,8 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
     []
   ];
 
-
   const headerRef = useRef<[React.ReactNode?, string?, number?][]>([
-    [t(`${asciiToString(selectedInfo.identity?.subnet_name)} Details`), 'start', 1],
+    [t(`${subnet?.identity.subnetName} Details`), 'start', 1],
     [<Button
       icon='times'
       onClick={onClose}
@@ -101,10 +141,10 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
          <td colSpan={2}>
            <InputAddress
             label={t('Owner')}
-            value={selectedInfo?.owner ?? '-'}
+            value={subnet?.owner ?? '-'}
             isDisabled={true}
             type='allPlus'
-            defaultValue={selectedInfo?.owner ?? '-'}
+            defaultValue={subnet?.owner ?? '-'}
           />
          </td>
        </tr>
@@ -114,7 +154,7 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
              className='full'
              isDisabled
              label={t('Github Repo')}
-             value={GITHUB_REPO}
+             value={subnet?.identity?.githubRepo}
            />
          </td>
        </tr>
@@ -124,20 +164,20 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
              className='full'
              isDisabled
              label={t('Contact')}
-             value={selectedInfo?.identity?.subnet_contact ? asciiToString(selectedInfo.identity.subnet_contact) : '-'}
+             value={subnet?.identity?.subnetContact}
            />
          </td>
        </tr>
      </Table>
      <SummaryBox className={className}>
        <CardSummary label={t('Emissions')}>
-         <span>{formatBEVM(selectedInfo.emission_values)}</span>
+         <span>{formatBEVM(subnet?.emissionValues ?? 0)}</span>
        </CardSummary>
        <CardSummary label={t('Auditor')}>
-         <span>{selectedInfo.max_allowed_validators}</span>
+         <span>{subnet?.maxAllowedValidators}</span>
        </CardSummary>
        <CardSummary label={t('Miner')}>
-         <span>{selectedInfo.min_allowed_weights}</span>
+         <span>{subnet.mi}</span>
        </CardSummary>
      </SummaryBox>
 
@@ -145,7 +185,7 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
        empty={t('No neurons found')}
        header={header}
      >
-       {neurons.map((info) => (
+       {neuronsList?.data?.map((info) => (
          <SubnetInfoTr
            key={info.hotkey}
            className={className}
