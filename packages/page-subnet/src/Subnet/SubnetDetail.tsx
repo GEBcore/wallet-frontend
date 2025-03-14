@@ -17,8 +17,8 @@ export interface NeuronInfoItem {
   totalStake: number;
   hotkey: string;
   coldkey: string;
-  uid: 1;
-  netuid: 1;
+  uid: number;
+  netuid: number;
   active: boolean;
   axonInfo: {
     ip: string;
