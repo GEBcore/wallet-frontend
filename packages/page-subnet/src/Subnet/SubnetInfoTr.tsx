@@ -40,19 +40,19 @@ function SubnetInfoTr({ className, info }: Props): React.ReactElement<Props> {
             }}>
               <div>
                 <h5>{t('Consensus')}</h5>
-                <div>{info.consensus}%</div>
+                <div>{info.consensus}</div>
               </div>
               <div>
                 <h5>{t('Incentive')}</h5>
-                <div>{info.incentive}%</div>
+                <div>{info.incentive}</div>
               </div>
               <div>
                 <h5>{t('Dividends')}</h5>
-                <div>{info.dividends}%</div>
+                <div>{info.dividends}</div>
               </div>
               <div>
                 <h5>{t('Axon')}</h5>
-                <div>{info.axonInfo.ip}%</div>
+                <div>{info.axonInfo.ip}</div>
               </div>
             </div>
           </td>
