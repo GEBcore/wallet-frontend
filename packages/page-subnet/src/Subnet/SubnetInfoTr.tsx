@@ -3,44 +3,11 @@ import { AddressSmall, Table } from '@polkadot/react-components';
 import { useTranslation } from '../translate.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { useToggle } from '@polkadot/react-hooks';
+ import { NeuronInfoItem } from './SubnetDetail.js';
 
 interface Props {
   className?: string;
-  info: {
-    hotkey: string
-    coldkey: string
-    uid: number
-    netuid: number
-    active: boolean
-    axon_info: {
-      block: number
-      version: number
-      ip: number
-      port: number
-      ip_type: number
-      protocol: number
-      placeholder1: number
-      placeholder2: number
-    },
-    prometheus_info: {
-      block: number
-      version: number
-      ip: number
-      port: number
-      ip_type: number
-    },
-    stake: [string, number][],
-    rank: number
-    emission: number
-    incentive: number
-    consensus: number
-    trust: number
-    validator_trust: number
-    dividends: number
-    last_update: number
-    validator_permit: boolean
-    pruning_score: number
-  }
+  info: NeuronInfoItem
 }
 
 function SubnetInfoTr({ className, info }: Props): React.ReactElement<Props> {
@@ -51,10 +18,10 @@ function SubnetInfoTr({ className, info }: Props): React.ReactElement<Props> {
     <React.Fragment>
       <tr className={`${className} isExpanded isFirst ${isExpanded ? 'packedBottom' : 'isLast'}`}>
         <td>{info.netuid}</td>
-        <td>{info.axon_info.ip_type}</td>
+        <td>{info.userType}</td>
         <td>{info.uid}</td>
-        <td>{formatBEVM(info.stake[0][1])}</td>
-        <td>{info.validator_trust}</td>
+        <td>{formatBEVM(info.totalStake)}</td>
+        <td>{info.validatorTrust}</td>
         <td>{info.trust}</td>
         <td><AddressSmall value={info.hotkey} /></td>
         <td><AddressSmall value={info.coldkey} /></td>
@@ -85,7 +52,7 @@ function SubnetInfoTr({ className, info }: Props): React.ReactElement<Props> {
               </div>
               <div>
                 <h5>{t('Axon')}</h5>
-                <div>{info.axon_info.port}%</div>
+                <div>{info.axonInfo.ip}%</div>
               </div>
             </div>
           </td>

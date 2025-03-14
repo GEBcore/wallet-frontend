@@ -34,8 +34,9 @@ function Validator({ className }: Props): React.ReactElement<Props> {
     if(!systemChain) return
     axiosXAgereRpc('/xagere/getDelegates', {}, systemChain)
     .then(response => {
-      if (response && Array.isArray(response)) {
-        const sortedDelegates = response.sort((a, b) =>
+      const { data } = response
+      if (data && Array.isArray(data)) {
+        const sortedDelegates = data.sort((a, b) =>
           Number(b.totalStake) - Number(a.totalStake)
         );
         setSubnets(sortedDelegates);

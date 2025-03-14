@@ -49,10 +49,11 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
       address: account
     }, systemChain)
     .then(response => {
-      if (response && Array.isArray(response)) {
-        setDelegateData(response as DelegateInfo[]);
+      const { data } = response
+      if (data && Array.isArray(data)) {
+        setDelegateData(data as DelegateInfo[]);
       } else {
-        console.error('xagere_getDelegated response format:', response);
+        console.error('xagere_getDelegated response format:', data);
         setDelegateData([]);
       }
     })

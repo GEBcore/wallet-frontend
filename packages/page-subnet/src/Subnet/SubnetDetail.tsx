@@ -3,7 +3,7 @@ import { useTranslation } from '../translate.js';
 import { Button, CardSummary, Input, InputAddress, SummaryBox, Table } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import SubnetInfoTr from './SubnetInfoTr.js';
-import { asciiToString, formatBEVM } from '../Utils/formatBEVM.js';
+import { formatBEVM } from '../Utils/formatBEVM.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   onClose: () => void;
 }
 
-interface NeuronInfoItem {
+export interface NeuronInfoItem {
   userType: string;
   totalStake: number;
   hotkey: string;
@@ -121,21 +121,20 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
     []
   ];
 
-  const headerRef = useRef<[React.ReactNode?, string?, number?][]>([
-    [t(`${subnet?.identity.subnetName} Details`), 'start', 1],
+  const tableHeader: [React.ReactNode?, string?, number?][] = [
+    [subnet?.identity?.subnetName ? t(`${subnet.identity.subnetName} Details`) : t('Subnet Details'), 'start', 1],
     [<Button
       icon='times'
       onClick={onClose}
       label={t('Back to homepage')}
     />, 'end', 1]
-
-  ]);
+  ];
 
   return (
    <>
      <Table
        className={className}
-       header={headerRef.current}
+       header={tableHeader}
      >
        <tr>
          <td colSpan={2}>
@@ -174,10 +173,10 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
          <span>{formatBEVM(subnet?.emissionValues ?? 0)}</span>
        </CardSummary>
        <CardSummary label={t('Auditor')}>
-         <span>{subnet?.maxAllowedValidators}</span>
+         <span>{neuronsList?.auditorCount}</span>
        </CardSummary>
        <CardSummary label={t('Miner')}>
-         <span>{subnet.mi}</span>
+         <span>{neuronsList?.minerCount}</span>
        </CardSummary>
      </SummaryBox>
 

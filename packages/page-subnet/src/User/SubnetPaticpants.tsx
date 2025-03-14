@@ -55,9 +55,10 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
     if(!account || !systemChain) return
     axiosXAgereRpc('/xagere/getColdkeyOwnedHotkeysInfo', {address: account}, systemChain)
       .then(response => {
-        console.log('xagere_getColdkeyOwnedHotkeysInfo Response:', response);
-        if (Array.isArray(response)) {
-          setDelegateData(response);
+        const { data } = response
+        console.log('xagere_getColdkeyOwnedHotkeysInfo Response:', data);
+        if (Array.isArray(data)) {
+          setDelegateData(data);
         }
       })
       .catch(error => {

@@ -35,9 +35,10 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
     if(!systemChain) return
     axiosXAgereRpc('/xagere/getSubnetsInfo_v2', {}, systemChain)
     .then(response => {
-      console.log('xagere_getSubnetsInfo_v2 Response:', response);
-      if (Array.isArray(response)) {
-        setSubnets(response);
+      const { data } = response
+      console.log('xagere_getSubnetsInfo_v2 Response:', data);
+      if (Array.isArray(data)) {
+        setSubnets(data);
       }
     })
     .catch(error => {

@@ -21,7 +21,7 @@ export async function axiosXAgereRpc(method: string, params: any, systemChain?: 
       params: params
     });
 
-    return response.data.data;
+    return response.data;
   }catch (e) {
     console.error(e)
     return [];
