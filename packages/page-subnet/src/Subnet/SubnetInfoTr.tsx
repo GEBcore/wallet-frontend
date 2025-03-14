@@ -22,8 +22,8 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
         <td>{info.userType}</td>
         <td>{info.uid}</td>
         <td>{formatBEVM(info.totalStake)}</td>
-        <td>{info.validatorTrust}</td>
-        <td>{info.trust}</td>
+        <td>{info.vtrustFmt}</td>
+        <td>{info.trustFmt}</td>
         <td><AddressSmall value={info.hotkey} /></td>
         <td><AddressSmall value={info.coldkey} /></td>
         <Table.Column.Expand
@@ -41,15 +41,19 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
             }}>
               <div>
                 <h5>{t('Consensus')}</h5>
-                <div>{info.consensus}</div>
+                <div>{info.consensusFmt}</div>
               </div>
               <div>
                 <h5>{t('Incentive')}</h5>
-                <div>{info.incentive}</div>
+                <div>{info.incentiveFmt}</div>
               </div>
               <div>
                 <h5>{t('Dividends')}</h5>
-                <div>{info.dividends}</div>
+                <div>{info.dividendsFmt}</div>
+              </div>
+              <div>
+                <h5>{t('Updated')}</h5>
+                <div>{info.lastUpdate}</div>
               </div>
               <div>
                 <h5>{t('Axon')}</h5>

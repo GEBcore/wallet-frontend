@@ -42,6 +42,11 @@ export interface NeuronInfoItem {
   lastUpdate: number;
   validatorPermit: boolean
   pruningScore: number;
+  vtrustFmt: string;
+  trustFmt: string;
+  consensusFmt: string;
+  incentiveFmt: string;
+  dividendsFmt: string;
 }
 interface NeuronInfo {
   auditorCount: number;
@@ -114,7 +119,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
     [t('User Type'), 'start'],
     [t('User UID'), 'start'],
     [t('Stake'), 'start'],
-    [t('VTrust'), 'start'],
+    [t('ATrust'), 'start'],
     [t('Trust'), 'start'],
     [t('Hot Key'), 'start'],
     [t('Cold Key'), 'start'],
