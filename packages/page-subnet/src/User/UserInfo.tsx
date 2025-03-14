@@ -80,7 +80,7 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
           fontWeight: 'normal',
           padding: '1rem',
           borderBottom: '1px solid var(--border-table)'
-        }}>{t('Delegate Your BEVM')}</h2>
+        }}>{t('Delegate Your GEB')}</h2>
 
         <div style={{
           display: 'flex',
@@ -94,12 +94,12 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
             margin: 0,
             flex: 1,
             paddingRight: '2rem'
-          }}>{t('Delegate to the auditor, and you can share a portion of BEVM rewards. Please click the button to proceed with your staking!')}</p>
+          }}>{t('Delegate to the auditor, and you can share a portion of GEB rewards. Please click the button to proceed with your staking!')}</p>
 
           <Button
             icon='paper-plane'
             isDisabled={!account}
-            label={t('Delegate BEVM')}
+            label={t('Delegate GEB')}
             onClick={() => window.location.href = '/#/agere/auditor'}
           />
         </div>
