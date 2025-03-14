@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../translate.js';
 import { Button, CardSummary, Input, InputAddress, SummaryBox, Table } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
