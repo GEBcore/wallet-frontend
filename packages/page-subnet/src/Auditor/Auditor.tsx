@@ -17,9 +17,10 @@ interface DelegateInfo {
   totalStake:number;
   nominatorsCount:number;
   totalDailyReturn:number;
-  }
+  actives: number;
+}
 
-function Validator({ className }: Props): React.ReactElement<Props> {
+function Auditor({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { systemChain } = useApi();
   const { allAccounts, hasAccounts } = useAccounts()
@@ -36,7 +37,11 @@ function Validator({ className }: Props): React.ReactElement<Props> {
     .then(response => {
       const { data } = response
       if (data && Array.isArray(data)) {
-        const sortedDelegates = data.sort((a, b) =>
+        const processedDelegates = data.map(delegate => ({
+          ...delegate,
+          actives: delegate.actives.filter(active => active === true).length
+        }));
+        const sortedDelegates = processedDelegates.sort((a, b) =>
           Number(b.totalStake) - Number(a.totalStake)
         );
         setSubnets(sortedDelegates);
@@ -54,6 +59,7 @@ function Validator({ className }: Props): React.ReactElement<Props> {
     [t('Total Stake'), 'start'],
     [t('Nominator'), 'start'],
     [<TotalReturnWithTips value={t('Earn(24h)')}/>, 'start'],
+    [t('Active'), 'start'], //查找有多少个为true的
     [t('Operation'), 'start']
   ];
 
@@ -92,6 +98,7 @@ function Validator({ className }: Props): React.ReactElement<Props> {
               <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalStake)}</td>
               <td className='number' style={{textAlign:'start'}}>{info.nominatorsCount}</td>
               <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalDailyReturn)}</td>
+              <td className='number' style={{textAlign:'start'}}>{info.actives}</td>
               <td>
                 <Button
                   icon='paper-plane'
@@ -118,4 +125,4 @@ function Validator({ className }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(Validator);
+export default React.memo(Auditor);

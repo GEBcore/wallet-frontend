@@ -12,7 +12,7 @@ import { Route, Routes } from 'react-router';
 import { isFunction } from '@polkadot/util';
 import Subnet from './Subnet/Subnet.tsx';
 import User from './User/User.tsx';
-import Validator from './Validator/Validator.tsx';
+import Validator from './Auditor/Auditor.tsx';
 
 interface Props {
   basePath: string;
