@@ -173,10 +173,10 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
          <span>{formatBEVM(subnet?.emissionValues ?? 0)}</span>
        </CardSummary>
        <CardSummary label={t('Auditor')}>
-         <span>{neuronsList?.auditorCount}</span>
+         <span>{neuronsList?.auditorCount} / {subnet?.maxAllowedValidators}</span>
        </CardSummary>
        <CardSummary label={t('Miner')}>
-         <span>{neuronsList?.minerCount}</span>
+         <span>{neuronsList?.minerCount} / {Number(subnet?.maxAllowedUids) - Number(subnet?.maxAllowedValidators)}</span>
        </CardSummary>
      </SummaryBox>
 
@@ -184,9 +184,10 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
        empty={t('No neurons found')}
        header={header}
      >
-       {neuronsList?.data?.map((info) => (
+       {neuronsList?.data?.map((info, index) => (
          <SubnetInfoTr
            key={info.hotkey}
+           pos={index + 1}
            className={className}
            info={info}
          />

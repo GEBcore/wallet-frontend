@@ -7,17 +7,18 @@ import { useToggle } from '@polkadot/react-hooks';
 
 interface Props {
   className?: string;
+  pos: number;
   info: NeuronInfoItem
 }
 
-function SubnetInfoTr({ className, info }: Props): React.ReactElement<Props> {
+function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [isExpanded, toggleIsExpanded] = useToggle(false);
 
   return (
     <React.Fragment>
       <tr className={`${className} isExpanded isFirst ${isExpanded ? 'packedBottom' : 'isLast'}`}>
-        <td>{info.netuid}</td>
+        <td>{pos}</td>
         <td>{info.userType}</td>
         <td>{info.uid}</td>
         <td>{formatBEVM(info.totalStake)}</td>
