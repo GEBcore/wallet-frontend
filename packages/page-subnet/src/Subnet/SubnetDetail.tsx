@@ -145,7 +145,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
        <tr>
          <td colSpan={2}>
            <div style={{display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-             <div>Owner</div>
+             <div style={{fontSize:'12px', fontWeight:'500'}}>Owner</div>
              <AddressSmall value={subnet?.owner} />
            </div>
          </td>
