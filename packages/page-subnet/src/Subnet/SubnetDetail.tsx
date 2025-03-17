@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../translate.js';
-import { Button, CardSummary, Input, InputAddress, SummaryBox, Table } from '@polkadot/react-components';
+import { AddressSmall, Button, CardSummary, Input, SummaryBox, Table } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import SubnetInfoTr from './SubnetInfoTr.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
@@ -110,7 +110,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   }
 
   useEffect((): void => {
-    if(!systemChain) return
+    if(!systemChain || !selectedId) return
     fetchSubnetInfo(selectedId)
     fetchNeuronsList(selectedId)
   }, [systemChain, selectedId]);
@@ -144,13 +144,10 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
      >
        <tr>
          <td colSpan={2}>
-           <InputAddress
-            label={t('Owner')}
-            value={subnet?.owner ?? '-'}
-            isDisabled={true}
-            type='allPlus'
-            defaultValue={subnet?.owner ?? '-'}
-          />
+           <div style={{display:'flex', flexDirection:'column', gap:'0.25rem'}}>
+             <div>Owner</div>
+             <AddressSmall value={subnet?.owner} />
+           </div>
          </td>
        </tr>
        <tr>
