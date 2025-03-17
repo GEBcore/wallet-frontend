@@ -7,6 +7,7 @@ import { useAccounts, useApi, useToggle } from '@polkadot/react-hooks';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import StakingModal from '../User/StakingModal.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.tsx';
 interface Props {
   className?: string;
 }
@@ -58,12 +59,12 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
     [t('Commission'), 'start'],
     [t('Total Stake'), 'start'],
     [t('Nominator'), 'start'],
-    [<TotalReturnWithTips value={t('Earn(24h)')}/>, 'start'],
-    [t('Active'), 'start'], //查找有多少个为true的
+    [<TotalReturnWithTips value={'Earn(24h)'}/>, 'start'],
+    [<Tooltips title={'Active'} tips={'Show how many ageres the auditor has the identity of auditor in.'}/>, 'start'],
     [t('Operation'), 'start']
   ];
 
-  function fetchDelegatedData(selectedAccount: string, systemChain: string): void {
+  function fetchDelegatedData(): void {
         throw new Error('Function not implemented.');
   }
 
@@ -118,7 +119,7 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
           hotAddress={openStakeHotAddress}
           type={'addStake'}
           name={'Stake'}
-          onSuccess={()=> fetchDelegatedData(selectedAccount, systemChain)}
+          onSuccess={fetchDelegatedData}
         />
       )}
     </div>

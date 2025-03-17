@@ -5,6 +5,7 @@ import { useApi } from '@polkadot/react-hooks';
 import SubnetInfoTr from './SubnetInfoTr.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.tsx';
 
 interface Props {
   className?: string;
@@ -86,8 +87,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
   const { systemChain } = useApi();
 
-  console.log('selectedId', selectedId)
-  const fetchSubnetInfo = (id: number) => {
+  const fetchSubnetInfo = (id: string) => {
     axiosXAgereRpc('/xagere/getSubnetDetail', {netuid:id}, systemChain)
       .then(response => {
         console.log('/xagere/getSubnetDetail Response:', response);
@@ -98,7 +98,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
       });
   }
 
-  const fetchNeuronsList = (id: number) => {
+  const fetchNeuronsList = (id: string) => {
     axiosXAgereRpc('/xagere/getNeurons', {netuid:id}, systemChain)
       .then(response => {
         console.log('/xagere/getNeurons Response:', response);
@@ -120,8 +120,8 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
     [t('User Type'), 'start'],
     [t('User UID'), 'start'],
     [t('Stake'), 'start'],
-    [t('ATrust'), 'start'],
-    [t('Trust'), 'start'],
+    [<Tooltips title={'ATrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>, 'start'],
+    [<Tooltips title={'Trust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>, 'start'],
     [t('Hot Key'), 'start'],
     [t('Cold Key'), 'start'],
     []

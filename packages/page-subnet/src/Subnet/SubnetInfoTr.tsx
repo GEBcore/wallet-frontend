@@ -4,6 +4,7 @@ import { useTranslation } from '../translate.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { useToggle } from '@polkadot/react-hooks';
  import { NeuronInfoItem } from './SubnetDetail.js';
+ import Tooltips from '../Utils/Tooltips.js';
 
 interface Props {
   className?: string;
@@ -12,7 +13,6 @@ interface Props {
 }
 
 function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const [isExpanded, toggleIsExpanded] = useToggle(false);
 
   return (
@@ -40,23 +40,23 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
               padding: '1rem'
             }}>
               <div>
-                <h5>{t('Consensus')}</h5>
+                <Tooltips title={'consensus'} tips={'Executor consensus'}/>
                 <div>{info.consensusFmt}</div>
               </div>
               <div>
-                <h5>{t('Incentive')}</h5>
+                <Tooltips title={'incentives'} tips={'Executor incentive'}/>
                 <div>{info.incentiveFmt}</div>
               </div>
               <div>
-                <h5>{t('Dividends')}</h5>
+                <Tooltips title={'dividends'} tips={'Auditor dividends'}/>
                 <div>{info.dividendsFmt}</div>
               </div>
               <div>
-                <h5>{t('Last Updated')}</h5>
+                <Tooltips title={'last updated'} tips={'The GEB block corresponding to the most recent response.'}/>
                 <div>{info.lastUpdate}</div>
               </div>
               <div>
-                <h5>{t('Axon')}</h5>
+                <Tooltips title={'axon'} tips={'The communication endpoint of the participant.'}/>
                 <div>{info.axonInfo.ip + ':' + info.axonInfo.port}</div>
               </div>
             </div>
