@@ -3,9 +3,9 @@ import { Table, Input, AddressSmall } from '@polkadot/react-components';
 import { useTranslation } from '../translate.js';
 import { useApi } from '@polkadot/react-hooks';
 import { formatBEVM } from '../Utils/formatBEVM.js';
-import SubnetDetail from './SubnetDetail.js';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   className?: string;
@@ -25,8 +25,7 @@ interface SubnetInfo {
 function Subnet({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { systemChain } = useApi();
-  const [selectedInfo, setSelectedInfo] = useState<SubnetInfo | null>(null);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const [filter, setFilter] = useState('');
   const [subnets, setSubnets] = useState<SubnetInfo[]>([]);
@@ -59,7 +58,6 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
 
   const filterSubnets = (data: SubnetInfo[]): SubnetInfo[] => {
     if (!filter) return data;
-
     const searchTerm = filter.toLowerCase();
     return data.filter((subnet) => {
       const searchableFields = [
@@ -77,10 +75,12 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
     setFilter(value);
   };
 
+  const handleRowClick = (id: number) => {
+    navigate(`/agere/info/${id}`);
+  };
+
   return (
-    <>
-      {!selectedInfo ? (
-        <div className={className}>
+    <div className={className}>
           <div style={{
             background: 'white',
             borderRadius: '0.25rem',
@@ -111,8 +111,7 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
               <tr
                 key={subnet.netuid}
                 onClick={() => {
-                  setSelectedInfo(subnet)
-                  setSelectedId(subnet.netuid)
+                  handleRowClick(subnet.netuid)
                 }}
                 style={{
                   height: '70px',
@@ -124,7 +123,6 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
                 <td><AddressSmall value={subnet.owner} /></td>
                 <td>
                   {formatBEVM(subnet.totalDailyReturn)}
-                  {/*<TotalReturnWithTips key={`${subnet.netuid}`} value={formatBEVM(subnet.totalDailyReturn)}/>*/}
                 </td>
                 <td>{formatBEVM(subnet.recycled)}</td>
                 <td>{formatBEVM(subnet.burn)}</td>
@@ -133,13 +131,6 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
             ))}
           </Table>
         </div>
-      ) : (
-        <SubnetDetail
-          selectedId={selectedId}
-          onClose={() => setSelectedInfo(null)}
-        />
-      )}
-    </>
   );
 }
 

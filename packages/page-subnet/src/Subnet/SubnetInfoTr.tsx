@@ -52,12 +52,12 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
                 <div>{info.dividendsFmt}</div>
               </div>
               <div>
-                <h5>{t('Updated')}</h5>
+                <h5>{t('Last Updated')}</h5>
                 <div>{info.lastUpdate}</div>
               </div>
               <div>
                 <h5>{t('Axon')}</h5>
-                <div>{info.axonInfo.ip}</div>
+                <div>{info.axonInfo.ip + ':' + info.axonInfo.port}</div>
               </div>
             </div>
           </td>

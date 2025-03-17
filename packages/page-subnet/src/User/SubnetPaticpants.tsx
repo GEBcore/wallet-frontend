@@ -6,6 +6,7 @@ import StakingModal from './StakingModal.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import DelegateeInfo from './DelegateInfo.tsx';
 import RegisterInfo from './RegisterInfo.tsx';
+import { useNavigate } from 'react-router-dom';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 
@@ -32,6 +33,7 @@ interface HotkeyInfo {
 function SubnetParticipants ({ className, account }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { systemChain } = useApi();
+  const navigate = useNavigate();
   const [delegateData, setDelegateData] = useState<HotkeyInfo[]>([]);
   const [isStakingOpen, toggleIsStakingOpen] = useToggle();
   const [isUnStakingOpen, toggleIsUnStakingOpen] = useToggle();
@@ -71,6 +73,12 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
     fetchDelegateData(account, systemChain)
   }, [account, systemChain]);
 
+
+  const handleRowClick = (id: number) => {
+    navigate(`/agere/info/${id}`);
+  };
+
+
   return (
     <div className={className}>
       <RegisterInfo account={account} onSuccess={()=>fetchDelegateData(account, systemChain)}/>
@@ -100,7 +108,7 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
           {delegateData?.map(
               (info)=>{
                 return <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
-                  <td className='number' style={{textAlign:'start'}}>{info.netuid}</td>
+                  <td className='number' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.netuid}</td>
                   <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
                   <td className='text' style={{textAlign:'start'}}>{info.subnetIdentity}</td>
                   <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>

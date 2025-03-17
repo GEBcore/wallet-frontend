@@ -8,7 +8,7 @@ import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 
 interface Props {
   className?: string;
-  selectedId: number;
+  selectedId: string;
   onClose: () => void;
 }
 
@@ -86,6 +86,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
   const { systemChain } = useApi();
 
+  console.log('selectedId', selectedId)
   const fetchSubnetInfo = (id: number) => {
     axiosXAgereRpc('/xagere/getSubnetDetail', {netuid:id}, systemChain)
       .then(response => {
