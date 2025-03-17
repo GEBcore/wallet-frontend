@@ -118,7 +118,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   const header = [
     [t('Pos'), 'start'],
     [t('User Type'), 'start'],
-    [t('User UID'), 'start'],
+    [t('UID'), 'start'],
     [t('Stake'), 'start'],
     [<Tooltips title={'ATrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>, 'start'],
     [<Tooltips title={'Trust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>, 'start'],
