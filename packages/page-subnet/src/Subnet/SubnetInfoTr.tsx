@@ -1,5 +1,5 @@
  import React from 'react';
-import { AddressSmall, Table } from '@polkadot/react-components';
+import { AddressSmall, Table, Tooltip } from '@polkadot/react-components';
 import { useTranslation } from '../translate.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { useToggle } from '@polkadot/react-hooks';
@@ -40,23 +40,48 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
               padding: '1rem'
             }}>
               <div>
-                <Tooltips title={'consensus'} tips={'Executor consensus'}/>
+                <Tooltips
+                  key="consensus"
+                  title={'consensus'}
+                  tips={'Executor consensus'}
+                />
+                <Tooltip
+                  place='right'
+                  text={'click to copy'}
+                  trigger='tx-payload'
+                />
                 <div>{info.consensusFmt}</div>
               </div>
               <div>
-                <Tooltips title={'incentives'} tips={'Executor incentive'}/>
+                <Tooltips
+                  key="incentives"
+                  title={'incentives'}
+                  tips={'Executor incentive'}
+                />
                 <div>{info.incentiveFmt}</div>
               </div>
               <div>
-                <Tooltips title={'dividends'} tips={'Auditor dividends'}/>
+                <Tooltips
+                  key="dividends"
+                  title={'dividends'}
+                  tips={'Auditor dividends'}
+                />
                 <div>{info.dividendsFmt}</div>
               </div>
               <div>
-                <Tooltips title={'last updated'} tips={'The GEB block corresponding to the most recent response.'}/>
+                <Tooltips
+                  key="lastUpdated"
+                  title={'last updated'}
+                  tips={'The GEB block corresponding to the most recent response.'}
+                />
                 <div>{info.lastUpdate}</div>
               </div>
               <div>
-                <Tooltips title={'axon'} tips={'The communication endpoint of the participant.'}/>
+                <Tooltips
+                  key="axon"
+                  title={'axon'}
+                  tips={'The communication endpoint of the participant.'}
+                />
                 <div>{info.axonInfo.ip + ':' + info.axonInfo.port}</div>
               </div>
             </div>

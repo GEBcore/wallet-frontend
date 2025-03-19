@@ -9,6 +9,7 @@ import RegisterInfo from './RegisterInfo.tsx';
 import { useNavigate } from 'react-router-dom';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.js';
 
 interface Props {
   className?: string;
@@ -28,10 +29,15 @@ interface HotkeyInfo {
   validatorTrust: number;
   validatorPermit: boolean;
   trust: number;
+  consensus: number;
+  dividends: number;
+  incentive: number;
+  lastUpdate: number;
 }
 
 function SubnetParticipants ({ className, account }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const [isExpanded, toggleIsExpanded] = useToggle(false);
   const { systemChain } = useApi();
   const navigate = useNavigate();
   const [delegateData, setDelegateData] = useState<HotkeyInfo[]>([]);
@@ -50,7 +56,8 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
     [t('Auditor status'), 'start'],
     [t('Auditor Permit'), 'start'],
     [t('Executor status'), 'start'],
-    [t('Operation'), 'start']
+    [t('Operation'), 'start'],
+    []
   ];
 
   const fetchDelegateData = (account: string, systemChain: string) => {
@@ -107,36 +114,78 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
         >
           {delegateData?.map(
               (info)=>{
-                return <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
-                  <td className='number' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.netuid}</td>
-                  <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
-                  <td className='text' style={{textAlign:'start'}}>{info.subnetIdentity}</td>
-                  <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>
-                  <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.yourStakeAmount)}</td>
-                  <td className='number' style={{textAlign:'start'}}>
-                    {formatBEVM(info.yourDailyReturn)}
-                    {/*<TotalReturnWithTips key={`${info.hotKey}-${info.netuid}`} value={formatBEVM(info.yourDailyReturn)}/>*/}
-                  </td>
-                  <td style={{textAlign:'start'}}>{info.validatorTrust > 0 ? t('Active') : t('Inactive')}</td>
-                  <td style={{textAlign:'start'}}>{info.validatorPermit ? t('Yes') : t('No')}</td>
-                  <td className='status' style={{textAlign:'start'}}>{info.trust > 0 ? t('Active') : t('Inactive')}</td>
-                  <td>
-                    <div style={{textAlign:'start'}}>
-                      <Button
-                        icon='plus'
-                        isDisabled={!account}
-                        label={t('Stake')}
-                        onClick={()=>{toggleIsStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
-                      />
-                      <Button
-                        icon='minus'
-                        isDisabled={!account}
-                        label={t('UnStake')}
-                        onClick={()=>{toggleIsUnStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
-                      />
-                    </div>
-                  </td>
-                </tr>
+                return <React.Fragment>
+                  <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
+                    <td className='number' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.netuid}</td>
+                    <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
+                    <td className='text' style={{textAlign:'start'}}>{info.subnetIdentity}</td>
+                    <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>
+                    <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.yourStakeAmount)}</td>
+                    <td className='number' style={{textAlign:'start'}}>
+                      {formatBEVM(info.yourDailyReturn)}
+                      {/*<TotalReturnWithTips key={`${info.hotKey}-${info.netuid}`} value={formatBEVM(info.yourDailyReturn)}/>*/}
+                    </td>
+                    <td style={{textAlign:'start'}}>{info.validatorTrust > 0 ? t('Active') : t('Inactive')}</td>
+                    <td style={{textAlign:'start'}}>{info.validatorPermit ? t('Yes') : t('No')}</td>
+                    <td className='status' style={{textAlign:'start'}}>{info.trust > 0 ? t('Active') : t('Inactive')}</td>
+                    <td>
+                      <div style={{textAlign:'start'}}>
+                        <Button
+                          icon='plus'
+                          isDisabled={!account}
+                          label={t('Stake')}
+                          onClick={()=>{toggleIsStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
+                        />
+                        <Button
+                          icon='minus'
+                          isDisabled={!account}
+                          label={t('UnStake')}
+                          onClick={()=>{toggleIsUnStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
+                        />
+                      </div>
+                    </td>
+                    <Table.Column.Expand
+                      isExpanded={isExpanded}
+                      toggle={toggleIsExpanded}
+                    />
+                  </tr>
+                  {isExpanded && (
+                    <tr className={`${className} isExpanded details-row`}>
+                      <td colSpan={11}>
+                        <div style={{
+                          display: 'flex',
+                          gap: '10rem',
+                          padding: '1rem'
+                        }}>
+                          {/*<div>*/}
+                          {/*  <Tooltips title={'aTrust'} tips={'Executor consensus'}/>*/}
+                          {/*  <div>{info.validatorTrust}</div>*/}
+                          {/*</div>*/}
+                          <div>
+                            <Tooltips key={'participants'} title={'Trust'} tips={''}/>
+                            <div>{info.trust}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'consensus'} title={'Consensus'} tips={'Executor consensus'}/>
+                            <div>{info.consensus}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'dividends'} title={'dividends'} tips={'Auditor dividends'}/>
+                            <div>{info.dividends}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'updated'} title={'updated'} tips={'The GEB block corresponding to the most recent response.'}/>
+                            <div>{info.lastUpdate}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'incentives'} title={'incentives'} tips={'Executor incentive'}/>
+                            <div>{info.incentive}</div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               }
             )}
         </Table>

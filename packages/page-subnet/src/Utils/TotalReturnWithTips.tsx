@@ -9,7 +9,7 @@ interface Props {
 function TotalReturnWithTips({ value }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   return (
-    <Tooltips title={value} tips={t('The data provided is 24-hour estimated values and may have discrepancies from actual earnings. Your realized profits will be directly added to your staked amount. The stake can be released at any time without a lock-up period.')}/>
+    <Tooltips key={''} title={value} tips={t('The data provided is 24-hour estimated values and may have discrepancies from actual earnings. Your realized profits will be directly added to your staked amount. The stake can be released at any time without a lock-up period.')}/>
   )
 }
 
