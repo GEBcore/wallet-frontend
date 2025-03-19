@@ -85,6 +85,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   const { t } = useTranslation();
   const [subnet, setSubnet] = useState<SubnetInfo | null>(null)
   const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
+  const [sortBy, setSortBy] = useState<string>('')
   const { systemChain } = useApi();
 
   const fetchSubnetInfo = (id: string) => {
@@ -115,7 +116,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
     fetchNeuronsList(selectedId)
   }, [systemChain, selectedId]);
 
-  const header = [
+  const detailsHeader = [
     [t('Pos'), 'start'],
     [t('User Type'), 'start'],
     [t('UID'), 'start'],
@@ -127,7 +128,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
     []
   ];
 
-  const tableHeader: [React.ReactNode?, string?, number?][] = [
+  const mainInfoHeader: [React.ReactNode?, string?, number?][] = [
     [subnet?.identity?.subnetName ? t(`${subnet.identity.subnetName} Details`) : t('Subnet Details'), 'start', 1],
     [<Button
       icon='times'
@@ -138,56 +139,65 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
 
   return (
    <>
-     <Table
-       className={className}
-       header={tableHeader}
-     >
-       <tr>
-         <td colSpan={2}>
-           <div style={{display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-             <div style={{fontSize:'12px', fontWeight:'500'}}>Owner</div>
-             <AddressSmall value={subnet?.owner} />
-           </div>
-         </td>
-       </tr>
-       <tr>
-         <td colSpan={2}>
-         <Input
-             className='full'
-             isDisabled
-             label={t('Github Repo')}
-             value={subnet?.identity?.githubRepo}
-           />
-         </td>
-       </tr>
-       <tr>
-         <td colSpan={2}>
-           <Input
-             className='full'
-             isDisabled
-             label={t('Contact')}
-             value={subnet?.identity?.subnetContact}
-           />
-         </td>
-       </tr>
-     </Table>
+    {subnet && <Table
+        header={mainInfoHeader}
+        empty={t('No matches found')}
+      >
+        <tr>
+          <td colSpan={2}>
+            <div className='owner-info'>
+              <div className='owner-label'>{t('Owner')}</div>
+              <AddressSmall value={subnet?.owner} />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={2}>
+            <Input
+              className='full'
+              isDisabled
+              label={t('Github Repo')}
+              value={subnet?.identity?.githubRepo}
+              withLabel
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={2}>
+            <Input
+              className='full'
+              isDisabled
+              label={t('Contact')}
+              value={subnet?.identity?.subnetContact}
+              withLabel
+            />
+          </td>
+        </tr>
+      </Table>}
      <SummaryBox className={className}>
-       <CardSummary label={t('Emissions')}>
-         <span>{formatBEVM(subnet?.emissionValues ?? 0)}</span>
+       <CardSummary label={t('Emissions') + '(24h)'}>
+         <span>{formatBEVM(Number(subnet?.emissionValues) * 24 ?? 0)}</span>
        </CardSummary>
        <CardSummary label={t('Auditor')}>
          <span>{neuronsList?.auditorCount} / {subnet?.maxAllowedValidators}</span>
        </CardSummary>
-       <CardSummary label={t('Miner')}>
+       <CardSummary label={t('Executor')}>
          <span>{neuronsList?.minerCount} / {Number(subnet?.maxAllowedUids) - Number(subnet?.maxAllowedValidators)}</span>
        </CardSummary>
      </SummaryBox>
-
-     <Table
-       empty={t('No neurons found')}
-       header={header}
+     {neuronsList && <Table
+       header={detailsHeader}
+       sortBy={sortBy}
+       onChange={setSortBy}
      >
-       {neuronsList?.data?.map((info, index) => (
+       {neuronsList?.data?.sort((a, b) => {
+         if (sortBy === 'atrust') {
+           return b.validatorTrust - a.validatorTrust;
+         } else if (sortBy === 'trust') {
+           return b.trust - a.trust;
+         }
+         return 0;
+       }).map((info, index) => (
          <SubnetInfoTr
            key={info.hotkey}
            pos={index + 1}
@@ -195,7 +205,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
            info={info}
          />
        ))}
-     </Table>
+     </Table>}
    </>
   );
 }
