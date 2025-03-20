@@ -176,7 +176,7 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                             <div>{info.dividendsFmt}</div>
                           </div>
                           <div>
-                            <Tooltips key={'updated'} title={'updated'} tips={'The GEB block corresponding to the most recent response.'}/>
+                            <Tooltips key={'updated'} title={'last update'} tips={'The GEB block corresponding to the most recent response.'}/>
                             <div>{info.lastUpdate}</div>
                           </div>
                           <div>

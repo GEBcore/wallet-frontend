@@ -106,29 +106,37 @@ const OwnerStyled = styled.div`
 
 function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const [subnetActive, setSubnetActive] = useState(true)
   const [subnet, setSubnet] = useState<SubnetInfo | null>(null)
+  const [neuronsListActive, setNeuronsListActive] = useState(true)
   const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
   const [sortBy, setSortBy] = useState<string>('')
   const { systemChain } = useApi();
 
   const fetchSubnetInfo = (id: string) => {
+    setSubnetActive(true)
     axiosXAgereRpc('/xagere/getSubnetDetail', {netuid:id}, systemChain)
       .then(response => {
+        setSubnetActive(false)
         console.log('/xagere/getSubnetDetail Response:', response);
         setSubnet(response)
       })
       .catch(error => {
+        setSubnetActive(false)
         console.error('/xagere/getSubnetDetail Error:', error);
       });
   }
 
   const fetchNeuronsList = (id: string) => {
+    setNeuronsListActive(true)
     axiosXAgereRpc('/xagere/getNeurons', {netuid:id}, systemChain)
       .then(response => {
+        setNeuronsListActive(false)
         console.log('/xagere/getNeurons Response:', response);
         setNeuronsList(response);
       })
       .catch(error => {
+        setNeuronsListActive(false)
         console.error('/xagere/getNeurons Error:', error);
       });
   }
@@ -162,56 +170,59 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
 
   return (
    <>
-    {subnet && <Table
-        header={mainInfoHeader}
-        empty={t('No matches found')}
-      >
-        <tr>
-          <td colSpan={2}>
-            <OwnerStyled>
-              <div className='owner-label'>{t('Owner')}</div>
-              <AddressSmall value={subnet?.owner} />
-            </OwnerStyled>
-          </td>
-        </tr>
-        <tr>
-          <td colSpan={2}>
-            <Input
-              className='full'
-              isDisabled
-              label={t('Github Repo')}
-              value={subnet?.identity?.githubRepo}
-              withLabel
-            />
-          </td>
-        </tr>
-        <tr>
-          <td colSpan={2}>
-            <Input
-              className='full'
-              isDisabled
-              label={t('Contact')}
-              value={subnet?.identity?.subnetContact}
-              withLabel
-            />
-          </td>
-        </tr>
-      </Table>}
+     <Table
+       header={mainInfoHeader}
+       empty={!subnetActive && t('No matches found')}
+       emptySpinner={t('Loading...')}
+     >
+       {subnet && <>
+         <tr>
+           <td colSpan={2}>
+             <OwnerStyled>
+               <div className='owner-label'>{t('Owner')}</div>
+               <AddressSmall value={subnet?.owner} />
+             </OwnerStyled>
+           </td>
+         </tr>
+         <tr>
+           <td colSpan={2}>
+             <Input
+               className='full'
+               isDisabled
+               label={t('Github Repo')}
+               value={subnet?.identity?.githubRepo}
+               withLabel
+             />
+           </td>
+         </tr>
+         <tr>
+           <td colSpan={2}>
+             <Input
+               className='full'
+               isDisabled
+               label={t('Contact')}
+               value={subnet?.identity?.subnetContact}
+               withLabel
+             />
+           </td>
+         </tr>
+       </>}
+     </Table>
      <SummaryBox className={className}>
        <CardSummary label={t('Emissions') + '(24h)'}>
-         <span>{formatBEVM(Number(subnet?.emissionValues) * 24 ?? 0)}</span>
+         {subnet?.emissionValues ? <span>{formatBEVM(Number(subnet.emissionValues) * 24 ?? 0)}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
        <CardSummary label={t('Auditor')}>
-         <span>{neuronsList?.auditorCount} / {subnet?.maxAllowedValidators}</span>
+         {neuronsList?.auditorCount && subnet?.maxAllowedValidators ? <span>{neuronsList.auditorCount} / {subnet.maxAllowedValidators}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
        <CardSummary label={t('Executor')}>
-         <span>{neuronsList?.minerCount} / {Number(subnet?.maxAllowedUids) - Number(subnet?.maxAllowedValidators)}</span>
+         {neuronsList?.minerCount && subnet?.maxAllowedUids && subnet?.maxAllowedValidators ? <span>{neuronsList?.minerCount} / {Number(subnet?.maxAllowedUids) - Number(subnet?.maxAllowedValidators)}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
      </SummaryBox>
-     {neuronsList && <Table
+     <Table
        header={detailsHeader}
-       sortBy={sortBy}
-       onChange={setSortBy}
+       empty={!neuronsListActive && t('No matches found')}
+       emptySpinner={t('Loading...')}
      >
        {neuronsList?.data?.sort((a, b) => {
          if (sortBy === 'atrust') {
@@ -228,7 +239,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
            info={info}
          />
        ))}
-     </Table>}
+     </Table>
    </>
   );
 }
