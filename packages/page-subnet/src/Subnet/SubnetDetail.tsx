@@ -1,153 +1,240 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../translate.js';
-import { Button, CardSummary, Input, InputAddress, SummaryBox, Table } from '@polkadot/react-components';
-import { callXAgereRpc } from '../callXAgereRpc.js';
-import { useApi, useToggle } from '@polkadot/react-hooks';
+import { AddressSmall, Button, CardSummary, Input, SummaryBox, Table } from '@polkadot/react-components';
+import { useApi } from '@polkadot/react-hooks';
 import SubnetInfoTr from './SubnetInfoTr.js';
-import { SubnetInfo } from './Subnet.js';
-import { asciiToString, formatBEVM } from '../Utils/formatBEVM.js';
+import { formatBEVM } from '../Utils/formatBEVM.js';
+import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.tsx';
+import { styled } from 'styled-components';
 
 interface Props {
   className?: string;
-  selectedInfo: SubnetInfo;
+  selectedId: string;
   onClose: () => void;
 }
 
-interface NeuronInfo {
+export interface NeuronInfoItem {
+  userType: string;
+  totalStake: number;
   hotkey: string;
   coldkey: string;
   uid: number;
   netuid: number;
   active: boolean;
-  axon_info: {
+  axonInfo: {
     ip: string;
     port: number;
-    ip_type: number;
+    ipType:number;
     protocol: number;
-    placeholder1: number;
-    placeholder2: number;
+    placeholder1:number;
+    placeholder2:number;
   };
-  prometheus_info: {
+  prometheusInfo: {
     ip: string;
     port: number;
   };
-  stake: [string, string][];
-  rank: number;
-  emission: string;
+  rank:number;
+  emission:number;
   incentive: number;
-  consensus: number;
+  consensus:number;
   trust: number;
-  validator_trust: number;
+  validatorTrust: number;
   dividends: number;
-  last_update: number;
-  validator_permit: boolean;
-  pruning_score: number;
+  lastUpdate: number;
+  validatorPermit: boolean
+  pruningScore: number;
+  vtrustFmt: string;
+  trustFmt: string;
+  consensusFmt: string;
+  incentiveFmt: string;
+  dividendsFmt: string;
+}
+interface NeuronInfo {
+  auditorCount: number;
+  minerCount: number;
+  data:NeuronInfoItem[]
 }
 
-function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactElement<Props> {
+interface SubnetInfo {
+  netuid: number;
+  rho: number;
+  kappa: number;
+  difficulty: number;
+  immunityPeriod: number;
+  maxAllowedValidators: number;
+  minAllowedWeights: number;
+  maxWeightsLimit: number;
+  scalingLawPower: number;
+  subnetworkN: number;
+  maxAllowedUids: number;
+  blocksSinceLastStep: number;
+  tempo: number;
+  networkModality: number;
+  emissionValues: number;
+  burn: number;
+  recycled: number;
+  owner: string;
+  identity: {
+    subnetName: string;
+    githubRepo: string;
+    subnetContact: string;
+  }
+}
+
+
+const OwnerStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  margin-left: 2rem;
+  border: 1px dashed rgba(34, 36, 38, .15);
+  color: rgba(0, 0, 0, .87);
+  border-radius: .28571429rem;
+  transition: box-shadow .1s ease, border-color .1s ease;
+  box-shadow: none;
+  background: transparent;
+  padding: 7.5px 14.5px 7.5px 20.3px;
+  .owner-label {
+    font-size: 12.46px;
+    color: #717171;
+    font-weight: 500;
+    margin-bottom: 3.5px;
+  }
+`
+
+function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [neurons, setNeurons] = useState<NeuronInfo[]>([]);
+  const [subnetActive, setSubnetActive] = useState(true)
+  const [subnet, setSubnet] = useState<SubnetInfo | null>(null)
+  const [neuronsListActive, setNeuronsListActive] = useState(true)
+  const [neuronsList, setNeuronsList] = useState<NeuronInfo | null>(null)
+  const [sortBy, setSortBy] = useState<string>('')
   const { systemChain } = useApi();
-  const GITHUB_REPO = selectedInfo?.identity?.github_repo ? asciiToString(selectedInfo.identity.github_repo) : '-'
 
-  useEffect(() => {
-    callXAgereRpc('xagere_getNeuronsLite', [selectedInfo.netuid], systemChain)
-      .then((response) => {
-        console.log('response', response);
-        // Sort neurons by total stake from high to low
-
-        if (Array.isArray(response)) {
-          const formatRep = response.sort((a, b) => {
-          const totalStakeA = a.stake.reduce((sum, [_, amount]) => sum + Number(amount), 0);
-          const totalStakeB = b.stake.reduce((sum, [_, amount]) => sum + Number(amount), 0);
-          return totalStakeB - totalStakeA;
-        });
-        setNeurons(formatRep);
-        }
+  const fetchSubnetInfo = (id: string) => {
+    setSubnetActive(true)
+    axiosXAgereRpc('/xagere/getSubnetDetail', {netuid:id}, systemChain)
+      .then(response => {
+        setSubnetActive(false)
+        console.log('/xagere/getSubnetDetail Response:', response);
+        setSubnet(response)
       })
-      .catch(console.error);
-  }, [selectedInfo, systemChain]);
+      .catch(error => {
+        setSubnetActive(false)
+        console.error('/xagere/getSubnetDetail Error:', error);
+      });
+  }
 
-  const header = [
+  const fetchNeuronsList = (id: string) => {
+    setNeuronsListActive(true)
+    axiosXAgereRpc('/xagere/getNeurons', {netuid:id}, systemChain)
+      .then(response => {
+        setNeuronsListActive(false)
+        console.log('/xagere/getNeurons Response:', response);
+        setNeuronsList(response);
+      })
+      .catch(error => {
+        setNeuronsListActive(false)
+        console.error('/xagere/getNeurons Error:', error);
+      });
+  }
+
+  useEffect((): void => {
+    if(!systemChain || !selectedId) return
+    fetchSubnetInfo(selectedId)
+    fetchNeuronsList(selectedId)
+  }, [systemChain, selectedId]);
+
+  const detailsHeader = [
     [t('Pos'), 'start'],
     [t('User Type'), 'start'],
-    [t('User UID'), 'start'],
+    [t('UID'), 'start'],
     [t('Stake'), 'start'],
-    [t('VTrust'), 'start'],
-    [t('Trust'), 'start'],
+    [<Tooltips title={'ATrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>, 'start'],
+    [<Tooltips title={'Trust'} tips={'The executor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>, 'start'],
     [t('Hot Key'), 'start'],
     [t('Cold Key'), 'start'],
     []
   ];
 
-
-  const headerRef = useRef<[React.ReactNode?, string?, number?][]>([
-    [t(`${asciiToString(selectedInfo.identity?.subnet_name)} Details`), 'start', 1],
+  const mainInfoHeader: [React.ReactNode?, string?, number?][] = [
+    [<span style={{textTransform: 'none'}}>{subnet?.identity?.subnetName ? t(`${subnet.identity.subnetName} Details`) : t('Subnet Details')}</span>, 'start', 1],
     [<Button
       icon='times'
       onClick={onClose}
       label={t('Back to homepage')}
     />, 'end', 1]
-
-  ]);
+  ];
 
   return (
    <>
      <Table
-       className={className}
-       header={headerRef.current}
+       header={mainInfoHeader}
+       empty={!subnetActive && t('No matches found')}
+       emptySpinner={t('Loading...')}
      >
-       <tr>
-         <td colSpan={2}>
-           <InputAddress
-            label={t('Owner')}
-            value={selectedInfo?.owner ?? '-'}
-            isDisabled={true}
-            type='allPlus'
-            defaultValue={selectedInfo?.owner ?? '-'}
-          />
-         </td>
-       </tr>
-       <tr>
-         <td colSpan={2}>
-         <Input
-             className='full'
-             isDisabled
-             label={t('Github Repo')}
-             value={GITHUB_REPO}
-           />
-         </td>
-       </tr>
-       <tr>
-         <td colSpan={2}>
-           <Input
-             className='full'
-             isDisabled
-             label={t('Contact')}
-             value={selectedInfo?.identity?.subnet_contact ? asciiToString(selectedInfo.identity.subnet_contact) : '-'}
-           />
-         </td>
-       </tr>
+       {subnet && <>
+         <tr>
+           <td colSpan={2}>
+             <OwnerStyled>
+               <div className='owner-label'>{t('Owner')}</div>
+               <AddressSmall value={subnet?.owner} />
+             </OwnerStyled>
+           </td>
+         </tr>
+         <tr>
+           <td colSpan={2}>
+             <Input
+               className='full'
+               isDisabled
+               label={t('Github Repo')}
+               value={subnet?.identity?.githubRepo}
+               withLabel
+             />
+           </td>
+         </tr>
+         <tr>
+           <td colSpan={2}>
+             <Input
+               className='full'
+               isDisabled
+               label={t('Contact')}
+               value={subnet?.identity?.subnetContact}
+               withLabel
+             />
+           </td>
+         </tr>
+       </>}
      </Table>
      <SummaryBox className={className}>
-       <CardSummary label={t('Emissions')}>
-         <span>{formatBEVM(selectedInfo.emission_values)}</span>
+       <CardSummary label={t('Emissions') + '(24h)'}>
+         {subnet?.emissionValues ? <span>{formatBEVM(Number(subnet.emissionValues) * 24 ?? 0)}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
        <CardSummary label={t('Auditor')}>
-         <span>{selectedInfo.max_allowed_validators}</span>
+         {neuronsList?.auditorCount && subnet?.maxAllowedValidators ? <span>{neuronsList.auditorCount} / {subnet.maxAllowedValidators}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
-       <CardSummary label={t('Miner')}>
-         <span>{selectedInfo.min_allowed_weights}</span>
+       <CardSummary label={t('Executor')}>
+         {neuronsList?.minerCount && subnet?.maxAllowedUids && subnet?.maxAllowedValidators ? <span>{neuronsList?.minerCount} / {Number(subnet?.maxAllowedUids) - Number(subnet?.maxAllowedValidators)}</span>:<span className='--tmp'>99</span>}
        </CardSummary>
      </SummaryBox>
-
      <Table
-       empty={t('No neurons found')}
-       header={header}
+       header={detailsHeader}
+       empty={!neuronsListActive && t('No matches found')}
+       emptySpinner={t('Loading...')}
      >
-       {neurons.map((info) => (
+       {neuronsList?.data?.sort((a, b) => {
+         if (sortBy === 'atrust') {
+           return b.validatorTrust - a.validatorTrust;
+         } else if (sortBy === 'trust') {
+           return b.trust - a.trust;
+         }
+         return 0;
+       }).map((info, index) => (
          <SubnetInfoTr
            key={info.hotkey}
+           pos={index + 1}
            className={className}
            info={info}
          />
@@ -158,3 +245,5 @@ function SubnetDetail({ className, selectedInfo, onClose }: Props): React.ReactE
 }
 
 export default React.memo(SubnetDetail);
+
+

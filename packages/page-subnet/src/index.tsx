@@ -8,11 +8,12 @@ import { useApi } from '@polkadot/react-hooks';
 import type { TabItem } from '@polkadot/react-components/types';
 
 import { useTranslation } from './translate.js';
-import { Route, Routes } from 'react-router';
+import { Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { isFunction } from '@polkadot/util';
 import Subnet from './Subnet/Subnet.tsx';
 import User from './User/User.tsx';
-import Validator from './Validator/Validator.tsx';
+import Validator from './Auditor/Auditor.tsx';
+import SubnetDetail from './Subnet/SubnetDetail.tsx';
 
 interface Props {
   basePath: string;
@@ -40,6 +41,7 @@ function createItemsRef (t: (key: string, options?: { replace: Record<string, un
 function App ({ basePath, className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
+  const navigate = useNavigate();
 
   const itemsRef = useRef(createItemsRef(t));
 
@@ -47,6 +49,8 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
     () => isFunction(api.query.babe?.authorities) ? [] : ['forks'],
     [api]
   );
+
+  const { pathname } = useLocation()
 
   return (
     <main className={className}>
@@ -59,6 +63,12 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}`} element={<User />} />
         <Route path={`${basePath}/info`} element={<Subnet />} />
         <Route path={`${basePath}/auditor`} element={<Validator />} />
+        <Route path={`${basePath}/info/:id`} element={
+          <SubnetDetail 
+            selectedId={pathname.replace(basePath.concat('/info/'), '')} 
+            onClose={() => navigate(`${basePath}/info`)} 
+          />
+        } />
         {/*<Route path={`${basePath}/user`} element={} />*/}
       </Routes>
     </main>

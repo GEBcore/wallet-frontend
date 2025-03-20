@@ -7,6 +7,7 @@ import { useAccounts, useApi, useToggle } from '@polkadot/react-hooks';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import StakingModal from '../User/StakingModal.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.tsx';
 interface Props {
   className?: string;
 }
@@ -17,9 +18,10 @@ interface DelegateInfo {
   totalStake:number;
   nominatorsCount:number;
   totalDailyReturn:number;
-  }
+  actives: number;
+}
 
-function Validator({ className }: Props): React.ReactElement<Props> {
+function Auditor({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { systemChain } = useApi();
   const { allAccounts, hasAccounts } = useAccounts()
@@ -34,8 +36,13 @@ function Validator({ className }: Props): React.ReactElement<Props> {
     if(!systemChain) return
     axiosXAgereRpc('/xagere/getDelegates', {}, systemChain)
     .then(response => {
-      if (response && Array.isArray(response)) {
-        const sortedDelegates = response.sort((a, b) =>
+      const { data } = response
+      if (data && Array.isArray(data)) {
+        const processedDelegates = data.map(delegate => ({
+          ...delegate,
+          actives: delegate.actives.filter(active => active === true).length
+        }));
+        const sortedDelegates = processedDelegates.sort((a, b) =>
           Number(b.totalStake) - Number(a.totalStake)
         );
         setSubnets(sortedDelegates);
@@ -52,11 +59,12 @@ function Validator({ className }: Props): React.ReactElement<Props> {
     [t('Commission'), 'start'],
     [t('Total Stake'), 'start'],
     [t('Nominator'), 'start'],
-    [<TotalReturnWithTips value={t('Earn(24h)')}/>, 'start'],
+    [<TotalReturnWithTips value={'Earn(24h)'}/>, 'start'],
+    [<Tooltips title={'Active'} tips={'Show how many ageres the auditor has the identity of auditor in.'}/>, 'start'],
     [t('Operation'), 'start']
   ];
 
-  function fetchDelegatedData(selectedAccount: string, systemChain: string): void {
+  function fetchDelegatedData(): void {
         throw new Error('Function not implemented.');
   }
 
@@ -91,6 +99,7 @@ function Validator({ className }: Props): React.ReactElement<Props> {
               <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalStake)}</td>
               <td className='number' style={{textAlign:'start'}}>{info.nominatorsCount}</td>
               <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalDailyReturn)}</td>
+              <td className='number' style={{textAlign:'start'}}>{info.actives}</td>
               <td>
                 <Button
                   icon='paper-plane'
@@ -110,11 +119,11 @@ function Validator({ className }: Props): React.ReactElement<Props> {
           hotAddress={openStakeHotAddress}
           type={'addStake'}
           name={'Stake'}
-          onSuccess={()=> fetchDelegatedData(selectedAccount, systemChain)}
+          onSuccess={fetchDelegatedData}
         />
       )}
     </div>
   );
 }
 
-export default React.memo(Validator);
+export default React.memo(Auditor);

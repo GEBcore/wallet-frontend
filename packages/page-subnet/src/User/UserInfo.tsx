@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../translate.js';
-import { AddressSmall, Button, Table, TxButton } from '@polkadot/react-components';
-import { useAccounts, useApi, useToggle } from '@polkadot/react-hooks';
+import { AddressSmall, Button, Table } from '@polkadot/react-components';
+import { useApi, useToggle } from '@polkadot/react-hooks';
 import StakingModal from './StakingModal.tsx';
-import { formatAddress, formatBEVM } from '../Utils/formatBEVM.ts';
+import { formatBEVM } from '../Utils/formatBEVM.ts';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { FormatBalance } from '@polkadot/react-query';
 import UnStakingModal from './UnStakingModal.tsx';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import { NavLink } from 'react-router-dom';
 
 interface Props {
   className?: string;
@@ -49,10 +50,11 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
       address: account
     }, systemChain)
     .then(response => {
-      if (response && Array.isArray(response)) {
-        setDelegateData(response as DelegateInfo[]);
+      const { data } = response
+      if (data && Array.isArray(data)) {
+        setDelegateData(data as DelegateInfo[]);
       } else {
-        console.error('xagere_getDelegated response format:', response);
+        console.error('xagere_getDelegated response format:', data);
         setDelegateData([]);
       }
     })
@@ -94,13 +96,10 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
             flex: 1,
             paddingRight: '2rem'
           }}>{t('Delegate to the auditor, and you can share a portion of GEB rewards. Please click the button to proceed with your staking!')}</p>
-
-          <Button
-            icon='paper-plane'
-            isDisabled={!account}
-            label={t('Delegate GEB')}
-            onClick={() => window.location.href = '/#/agere/auditor'}
-          />
+          <NavLink to={'/agere/auditor'} key={'delegate-geb-link'} style={{display:'flex', flexDirection:'row', alignItems: 'center', justifyContent:'center', gap:'4px', cursor:'pointer'}}>
+            <Button icon='paper-plane'/>
+            <span style={{color:'#717171'}}>{t('Delegate GEB')}</span>
+          </NavLink>
         </div>
       </div>
 

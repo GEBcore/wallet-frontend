@@ -6,8 +6,10 @@ import StakingModal from './StakingModal.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import DelegateeInfo from './DelegateInfo.tsx';
 import RegisterInfo from './RegisterInfo.tsx';
+import { useNavigate } from 'react-router-dom';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import Tooltips from '../Utils/Tooltips.js';
 
 interface Props {
   className?: string;
@@ -26,12 +28,20 @@ interface HotkeyInfo {
   yourDailyReturn: number;
   validatorTrust: number;
   validatorPermit: boolean;
+  lastUpdate: number;
   trust: number;
+  vtrustFmt: string;
+  trustFmt: string;
+  consensusFmt: string;
+  incentiveFmt: string;
+  dividendsFmt: string;
 }
 
 function SubnetParticipants ({ className, account }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const [isExpanded, toggleIsExpanded] = useToggle(false);
   const { systemChain } = useApi();
+  const navigate = useNavigate();
   const [delegateData, setDelegateData] = useState<HotkeyInfo[]>([]);
   const [isStakingOpen, toggleIsStakingOpen] = useToggle();
   const [isUnStakingOpen, toggleIsUnStakingOpen] = useToggle();
@@ -48,16 +58,18 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
     [t('Auditor status'), 'start'],
     [t('Auditor Permit'), 'start'],
     [t('Executor status'), 'start'],
-    [t('Operation'), 'start']
+    [t('Operation'), 'start'],
+    []
   ];
 
   const fetchDelegateData = (account: string, systemChain: string) => {
     if(!account || !systemChain) return
     axiosXAgereRpc('/xagere/getColdkeyOwnedHotkeysInfo', {address: account}, systemChain)
       .then(response => {
-        console.log('xagere_getColdkeyOwnedHotkeysInfo Response:', response);
-        if (Array.isArray(response)) {
-          setDelegateData(response);
+        const { data } = response
+        console.log('xagere_getColdkeyOwnedHotkeysInfo Response:', data);
+        if (Array.isArray(data)) {
+          setDelegateData(data);
         }
       })
       .catch(error => {
@@ -69,6 +81,12 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
   useEffect((): void => {
     fetchDelegateData(account, systemChain)
   }, [account, systemChain]);
+
+
+  const handleRowClick = (id: number) => {
+    navigate(`/agere/info/${id}`);
+  };
+
 
   return (
     <div className={className}>
@@ -98,36 +116,78 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
         >
           {delegateData?.map(
               (info)=>{
-                return <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
-                  <td className='number' style={{textAlign:'start'}}>{info.netuid}</td>
-                  <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
-                  <td className='text' style={{textAlign:'start'}}>{info.subnetIdentity}</td>
-                  <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>
-                  <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.yourStakeAmount)}</td>
-                  <td className='number' style={{textAlign:'start'}}>
-                    {formatBEVM(info.yourDailyReturn)}
-                    {/*<TotalReturnWithTips key={`${info.hotKey}-${info.netuid}`} value={formatBEVM(info.yourDailyReturn)}/>*/}
-                  </td>
-                  <td style={{textAlign:'start'}}>{info.validatorTrust > 0 ? t('Active') : t('Inactive')}</td>
-                  <td style={{textAlign:'start'}}>{info.validatorPermit ? t('Yes') : t('No')}</td>
-                  <td className='status' style={{textAlign:'start'}}>{info.trust > 0 ? t('Active') : t('Inactive')}</td>
-                  <td>
-                    <div style={{textAlign:'start'}}>
-                      <Button
-                        icon='plus'
-                        isDisabled={!account}
-                        label={t('Stake')}
-                        onClick={()=>{toggleIsStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
-                      />
-                      <Button
-                        icon='minus'
-                        isDisabled={!account}
-                        label={t('UnStake')}
-                        onClick={()=>{toggleIsUnStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
-                      />
-                    </div>
-                  </td>
-                </tr>
+                return <React.Fragment>
+                  <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
+                    <td className='number' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.netuid}</td>
+                    <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
+                    <td className='text' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.subnetIdentity}</td>
+                    <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>
+                    <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.yourStakeAmount)}</td>
+                    <td className='number' style={{textAlign:'start'}}>
+                      {formatBEVM(info.yourDailyReturn)}
+                      {/*<TotalReturnWithTips key={`${info.hotKey}-${info.netuid}`} value={formatBEVM(info.yourDailyReturn)}/>*/}
+                    </td>
+                    <td style={{textAlign:'start'}}>{info.validatorTrust > 0 ? t('Active') : t('Inactive')}</td>
+                    <td style={{textAlign:'start'}}>{info.validatorPermit ? t('Yes') : t('No')}</td>
+                    <td className='status' style={{textAlign:'start'}}>{info.trust > 0 ? t('Active') : t('Inactive')}</td>
+                    <td>
+                      <div style={{textAlign:'start'}}>
+                        <Button
+                          icon='plus'
+                          isDisabled={!account}
+                          label={t('Stake')}
+                          onClick={()=>{toggleIsStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
+                        />
+                        <Button
+                          icon='minus'
+                          isDisabled={!account}
+                          label={t('UnStake')}
+                          onClick={()=>{toggleIsUnStakingOpen();setOpenStakeHotAddress(info.hotKey)}}
+                        />
+                      </div>
+                    </td>
+                    <Table.Column.Expand
+                      isExpanded={isExpanded}
+                      toggle={toggleIsExpanded}
+                    />
+                  </tr>
+                  {isExpanded && (
+                    <tr className={`${className} isExpanded details-row`}>
+                      <td colSpan={11}>
+                        <div style={{
+                          display: 'flex',
+                          gap: '10rem',
+                          padding: '1rem'
+                        }}>
+                          <div>
+                            <Tooltips title={'aTrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>
+                            <div>{info.vtrustFmt}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'participants'} title={'trust'} tips={'The executor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>
+                            <div>{info.trustFmt}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'consensus'} title={'consensus'} tips={'Executor consensus'}/>
+                            <div>{info.consensusFmt}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'dividends'} title={'dividends'} tips={'Auditor dividends'}/>
+                            <div>{info.dividendsFmt}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'updated'} title={'last update'} tips={'The GEB block corresponding to the most recent response.'}/>
+                            <div>{info.lastUpdate}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'incentives'} title={'incentives'} tips={'Executor incentive'}/>
+                            <div>{info.incentiveFmt}</div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               }
             )}
         </Table>
