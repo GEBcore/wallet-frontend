@@ -8,6 +8,7 @@ import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { FormatBalance } from '@polkadot/react-query';
 import UnStakingModal from './UnStakingModal.tsx';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
+import { NavLink } from 'react-router-dom';
 
 interface Props {
   className?: string;
@@ -96,12 +97,21 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
             paddingRight: '2rem'
           }}>{t('Delegate to the auditor, and you can share a portion of GEB rewards. Please click the button to proceed with your staking!')}</p>
 
-          <Button
-            icon='paper-plane'
-            isDisabled={!account}
-            label={t('Delegate GEB')}
-            onClick={() => window.location.href = '/#/agere/auditor'}
-          />
+          {/*<Button*/}
+          {/*  icon='paper-plane'*/}
+          {/*  isDisabled={!account}*/}
+          {/*  label={t('Delegate GEB')}*/}
+          {/*  // onClick={() => window.location.href = '/#/agere/auditor'}*/}
+          {/*/>*/}
+          <NavLink to={'/agere/auditor'} key={'delegate-geb-link'}>
+            {/*<Button*/}
+            {/*  icon='paper-plane'*/}
+            {/*  isDisabled={!account}*/}
+            {/*  label={t('Delegate GEB')}*/}
+            {/*  // onClick={() => window.location.href = '/#/agere/auditor'}*/}
+            {/*/>*/}
+            <span>Delegate GEB</span>
+          </NavLink>
         </div>
       </div>
 
