@@ -157,16 +157,16 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                           gap: '10rem',
                           padding: '1rem'
                         }}>
-                          {/*<div>*/}
-                          {/*  <Tooltips title={'aTrust'} tips={'Executor consensus'}/>*/}
-                          {/*  <div>{info.validatorTrust}</div>*/}
-                          {/*</div>*/}
                           <div>
-                            <Tooltips key={'participants'} title={'Trust'} tips={''}/>
+                            <Tooltips title={'aTrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>
+                            <div>{info.validatorTrust}</div>
+                          </div>
+                          <div>
+                            <Tooltips key={'participants'} title={'trust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>
                             <div>{info.trust}</div>
                           </div>
                           <div>
-                            <Tooltips key={'consensus'} title={'Consensus'} tips={'Executor consensus'}/>
+                            <Tooltips key={'consensus'} title={'consensus'} tips={'Executor consensus'}/>
                             <div>{info.consensus}</div>
                           </div>
                           <div>
