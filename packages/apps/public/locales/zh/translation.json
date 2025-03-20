@@ -1475,5 +1475,5 @@
   "Executor consensus": "执行者共识",
   "The communication endpoint of the participant.": "参与者的通信地址",
   "The auditor's score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.": "Auditor的评分，越接近于1说明，该Auditor越接近于共识",
-  "Show how many ageres the auditor has the identity of auditor in.": "显示该auditor在多少个agere是auditor的身份",
+  "Show how many ageres the auditor has the identity of auditor in.": "显示该auditor在多少个agere是auditor的身份"
 }
