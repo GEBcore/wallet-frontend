@@ -1469,11 +1469,11 @@
   "Auditor Permit": "审计者许可",
   "The data provided is 24-hour estimated values and may have discrepancies from actual earnings. Your realized profits will be directly added to your staked amount. The stake can be released at any time without a lock-up period.": "该数据为24h预估数据与真实获得存在偏差，您的实际盈利会直接加到您的质押额度中，质押可随时解除没有锁定。",
   "Executor incentive":"执行者激励",
-  "The auditor's score, the closer it is to 1, indicates that the executor is more aligned with the consensus.":"Executor的评分，越接近于1说明，该Executor越接近于共识",
   "The GEB block corresponding to the most recent response.": "最近一次响应对应的GEB区块",
   "Auditor dividends": "审计者股息率",
   "Executor consensus": "执行者共识",
   "The communication endpoint of the participant.": "参与者的通信地址",
+  "The executor's score, the closer it is to 1, indicates that the executor is more aligned with the consensus.": "Executor的评分，越接近于1说明，该Executor越接近于共识",
   "The auditor's score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.": "Auditor的评分，越接近于1说明，该Auditor越接近于共识",
   "Show how many ageres the auditor has the identity of auditor in.": "显示该auditor在多少个agere是auditor的身份"
 }

@@ -162,7 +162,7 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                             <div>{info.validatorTrust}</div>
                           </div>
                           <div>
-                            <Tooltips key={'participants'} title={'trust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>
+                            <Tooltips key={'participants'} title={'trust'} tips={'The executor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>
                             <div>{info.trust}</div>
                           </div>
                           <div>

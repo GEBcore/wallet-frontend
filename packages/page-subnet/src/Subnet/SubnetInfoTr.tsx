@@ -45,11 +45,6 @@ function SubnetInfoTr({ className, pos, info }: Props): React.ReactElement<Props
                   title={'consensus'}
                   tips={'Executor consensus'}
                 />
-                <Tooltip
-                  place='right'
-                  text={'click to copy'}
-                  trigger='tx-payload'
-                />
                 <div>{info.consensusFmt}</div>
               </div>
               <div>
