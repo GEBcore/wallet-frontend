@@ -6,6 +6,7 @@ import SubnetInfoTr from './SubnetInfoTr.js';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 import Tooltips from '../Utils/Tooltips.tsx';
+import { styled } from 'styled-components';
 
 interface Props {
   className?: string;
@@ -81,6 +82,28 @@ interface SubnetInfo {
   }
 }
 
+
+const OwnerStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  margin-left: 2rem;
+  border: 1px dashed rgba(34, 36, 38, .15);
+  color: rgba(0, 0, 0, .87);
+  border-radius: .28571429rem;
+  transition: box-shadow .1s ease, border-color .1s ease;
+  box-shadow: none;
+  background: transparent;
+  padding: 7.5px 14.5px 7.5px 20.3px;
+  .owner-label {
+    font-size: 12.46px;
+    color: #717171;
+    font-weight: 500;
+    margin-bottom: 3.5px;
+  }
+`
+
 function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [subnet, setSubnet] = useState<SubnetInfo | null>(null)
@@ -145,10 +168,10 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
       >
         <tr>
           <td colSpan={2}>
-            <div className='owner-info'>
+            <OwnerStyled>
               <div className='owner-label'>{t('Owner')}</div>
               <AddressSmall value={subnet?.owner} />
-            </div>
+            </OwnerStyled>
           </td>
         </tr>
         <tr>
@@ -211,3 +234,5 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
 }
 
 export default React.memo(SubnetDetail);
+
+
