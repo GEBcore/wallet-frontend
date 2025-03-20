@@ -28,11 +28,13 @@ interface HotkeyInfo {
   yourDailyReturn: number;
   validatorTrust: number;
   validatorPermit: boolean;
-  trust: number;
-  consensus: number;
-  dividends: number;
-  incentive: number;
   lastUpdate: number;
+  trust: number;
+  vtrustFmt: string;
+  trustFmt: string;
+  consensusFmt: string;
+  incentiveFmt: string;
+  dividendsFmt: string;
 }
 
 function SubnetParticipants ({ className, account }: Props): React.ReactElement<Props> {
@@ -118,7 +120,7 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                   <tr key={`${info.hotKey}-${info.netuid}`} className='ui--Table-Body' style={{height:'70px'}}>
                     <td className='number' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.netuid}</td>
                     <td className='number' style={{textAlign:'start'}}>{info.rank}</td>
-                    <td className='text' style={{textAlign:'start'}}>{info.subnetIdentity}</td>
+                    <td className='text' style={{textAlign:'start', cursor:'pointer'}} onClick={()=>handleRowClick(info.netuid)}>{info.subnetIdentity}</td>
                     <td className='text' style={{textAlign:'start'}}>{<AddressSmall value={info.hotKey} />}</td>
                     <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.yourStakeAmount)}</td>
                     <td className='number' style={{textAlign:'start'}}>
@@ -159,19 +161,19 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                         }}>
                           <div>
                             <Tooltips title={'aTrust'} tips={'The auditor\'s score, the closer it is to 1, indicates that the auditor is more aligned with the consensus.'}/>
-                            <div>{info.validatorTrust}</div>
+                            <div>{info.vtrustFmt}</div>
                           </div>
                           <div>
                             <Tooltips key={'participants'} title={'trust'} tips={'The executor\'s score, the closer it is to 1, indicates that the executor is more aligned with the consensus.'}/>
-                            <div>{info.trust}</div>
+                            <div>{info.trustFmt}</div>
                           </div>
                           <div>
                             <Tooltips key={'consensus'} title={'consensus'} tips={'Executor consensus'}/>
-                            <div>{info.consensus}</div>
+                            <div>{info.consensusFmt}</div>
                           </div>
                           <div>
                             <Tooltips key={'dividends'} title={'dividends'} tips={'Auditor dividends'}/>
-                            <div>{info.dividends}</div>
+                            <div>{info.dividendsFmt}</div>
                           </div>
                           <div>
                             <Tooltips key={'updated'} title={'updated'} tips={'The GEB block corresponding to the most recent response.'}/>
@@ -179,7 +181,7 @@ function SubnetParticipants ({ className, account }: Props): React.ReactElement<
                           </div>
                           <div>
                             <Tooltips key={'incentives'} title={'incentives'} tips={'Executor incentive'}/>
-                            <div>{info.incentive}</div>
+                            <div>{info.incentiveFmt}</div>
                           </div>
                         </div>
                       </td>
