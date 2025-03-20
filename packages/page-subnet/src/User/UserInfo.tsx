@@ -98,7 +98,7 @@ function UserInfo ({ className, account }: Props): React.ReactElement<Props> {
           }}>{t('Delegate to the auditor, and you can share a portion of GEB rewards. Please click the button to proceed with your staking!')}</p>
           <NavLink to={'/agere/auditor'} key={'delegate-geb-link'} style={{display:'flex', flexDirection:'row', alignItems: 'center', justifyContent:'center', gap:'4px', cursor:'pointer'}}>
             <Button icon='paper-plane'/>
-            <span style={{color:'#CDA164'}}>{t('Delegate GEB')}</span>
+            <span style={{color:'#717171'}}>{t('Delegate GEB')}</span>
           </NavLink>
         </div>
       </div>
