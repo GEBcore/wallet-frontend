@@ -70,6 +70,7 @@ function UnStakingModal({ account, modelName, toggleOpen, hotAddress, type, name
           label={t(name)}
           params={[hotAddress, amount]}
           tx={api.tx['xAgere'][type]}
+          onStart={toggleOpen}
           onSuccess={()=>{
             toggleOpen()
             refreshData()

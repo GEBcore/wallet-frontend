@@ -60,6 +60,7 @@ function DelegateeModal({ account, toggleOpen, onSuccess:refreshData }: Props): 
           label={t('Delegate')}
           params={[selectedValidator]}
           tx={api.tx['xAgere']['becomeDelegate']}
+          onStart={toggleOpen}
           onSuccess={()=>{
             toggleOpen()
             refreshData()
