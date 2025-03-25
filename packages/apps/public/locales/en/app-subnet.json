@@ -100,5 +100,19 @@
   "register": "register",
   "register as a delegate": "register as a delegate",
   "register as a participant": "register as a participant",
-  "transferrable": "transferrable"
+  "transferrable": "transferrable",
+  "Auditor Details": "Auditor Details",
+  "Registered Time": "Registered Time",
+  "Self Stake": "Self Stake",
+  "Active Ageres": "Active Ageres",
+  "Stake Pos": "Stake Pos",
+  "Dividends": "Dividends",
+  "Axon": "Axon",
+  "No performance data found": "No performance data found",
+  "Performance": "Performance",
+  "Nominators": "Nominators",
+  "No nominators found": "No nominators found",
+  "Account": "Account",
+  "Delegate Amount": "Delegate Amount",
+  "Reward Amount": "Reward Amount"
 }

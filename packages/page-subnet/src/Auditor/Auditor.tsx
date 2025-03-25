@@ -8,6 +8,8 @@ import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import StakingModal from '../User/StakingModal.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 import Tooltips from '../Utils/Tooltips.tsx';
+import { useNavigate } from 'react-router-dom';
+
 interface Props {
   className?: string;
 }
@@ -30,7 +32,7 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
   const [selectedAccount, setSelectedAccount] = useState<string>(hasAccounts ? allAccounts[0] : '');
   const [isStakingOpen, toggleIsStakingOpen] = useToggle();
   const [openStakeHotAddress, setOpenStakeHotAddress] = useState<string>('');
-
+  const navigate = useNavigate();
 
   useEffect((): void => {
     if(!systemChain) return
@@ -68,6 +70,10 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
         throw new Error('Function not implemented.');
   }
 
+  const handleRowClick = (hotkey: string) => {
+    navigate(`auditor/${hotkey}`);
+  };
+
   return (
     <div className={className}>
       <div className='filter'>
@@ -80,8 +86,6 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
         />
       </div>
 
-
-
       <Table
         empty={t('No ageres found')}
         header={header}
@@ -92,7 +96,7 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
               String(v).toLowerCase().includes(filter.toLowerCase())
             )
           )?.map((info, index) => (
-            <tr key={`${info.delegateAddress}`} className='ui--Table-Body' style={{height:'70px'}}>
+            <tr key={`${info.delegateAddress}`} className='ui--Table-Body' style={{height:'70px'}} onClick={() => handleRowClick(info.delegateAddress)}>
               <td className='number' style={{textAlign:'start'}}>{index}</td>
               <td className='address' style={{textAlign:'start'}}><AddressSmall value={info.delegateAddress} /></td>
               <td className='number' style={{textAlign:'start'}}>{info.commission}</td>
