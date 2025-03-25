@@ -71,11 +71,10 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
           />
         } />
         <Route path={`${basePath}/auditor/:id`} element={
-          // <AuditorDetail
-          //   selectedId={pathname.replace(basePath.concat('/auditor/'), '')}
-          //   onClose={() => navigate(`${basePath}/auditor`)}
-          // />
-          <span>111</span>
+          <AuditorDetail
+            selectedId={pathname.replace(basePath.concat('/auditor/'), '')}
+            onClose={() => navigate(`${basePath}/auditor`)}
+          />
         } />
       </Routes>
     </main>
