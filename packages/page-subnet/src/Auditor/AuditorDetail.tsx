@@ -78,7 +78,6 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
   const { systemChain } = useApi();
 
   const fetchAuditorInfo = (address: string) => {
-    debugger
     setAuditorActive(true);
     setPerformanceActive(true)
     axiosXAgereRpc('/xagere/getAuditorInfo', {address: address}, systemChain)
@@ -86,7 +85,6 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
         setAuditorActive(false);
         setPerformanceActive(false)
         console.log('getAuditorInfo', response)
-        debugger
         const { data } = response
         const { performances, nominators } = data
         setAuditor(nominators);
