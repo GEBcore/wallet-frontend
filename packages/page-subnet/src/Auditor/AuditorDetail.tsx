@@ -14,36 +14,39 @@ interface Props {
 }
 
 interface NominatorInfo {
-  account: string;
-  delegateAmount: string;
-  rewardAmount: string;
+  address: string;
+  amount: number;
+}
+
+interface PerformanceInfo {
+  agereName: string;
+  stakePos: number;
+  uid: number;
+  aTrust: string;
+  dividends: string;
+  dominance: string;
+  emission: number;
+  axonInfo: {
+    ip: string;
+    port: number;
+    ipType: number;
+    protocol: number;
+    placeholder1: number;
+    placeholder2: number;
+  }
 }
 
 interface AuditorInfo {
   hotkey: string;
   coldkey: string;
-  registeredTime: string;
+  registerTime: number;
+  emission: number;
   totalStake: number;
   selfStake: number;
-  commission: number;
-  activeAgeres: number;
-  totalAgeres: number;
-  emission24h: number;
+  activeAgere: string;
+  commission: string;
+  performances: PerformanceInfo[];
   nominators: NominatorInfo[];
-}
-
-interface PerformanceInfo {
-  agereId: number;
-  agereName: string;
-  stakePos: number;
-  uid: number;
-  validatorTrust: number;
-  dividends: number;
-  emission: number;
-  axonInfo: {
-    ip: string;
-    port: number;
-  }
 }
 
 const KeyStyled = styled.div`
@@ -79,20 +82,15 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
 
   const fetchAuditorInfo = (address: string) => {
     setAuditorActive(true);
-    setPerformanceActive(true)
     axiosXAgereRpc('/xagere/getAuditorInfo', {address: address}, systemChain)
       .then(response => {
         setAuditorActive(false);
-        setPerformanceActive(false)
-        console.log('getAuditorInfo', response)
-        const { data } = response
-        const { performances, nominators } = data
-        setAuditor(nominators);
-        setPerformance(performances)
+        console.log('getAuditorInfo', response);
+        setAuditor(response);
+        setPerformance(response.performances);
       })
       .catch(error => {
         setAuditorActive(false);
-        setPerformanceActive(false)
         console.error('/xagere/getAuditorInfo Error:', error);
       });
   };
@@ -156,7 +154,7 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
             <td colSpan={2}>
               <KeyStyled>
                 <div className='key-label'>{t('Registered Time')}</div>
-                <div>{auditor.registeredTime}</div>
+                <div>{new Date(auditor.registerTime * 1000).toLocaleString()}</div>
               </KeyStyled>
             </td>
           </tr>
@@ -170,17 +168,17 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
           <span>{formatBEVM(auditor?.selfStake ?? 0)}</span>
         </CardSummary>
         <CardSummary label={t('Commission')}>
-          <span>{auditor?.commission ?? 0}%</span>
+          <span>{auditor?.commission}</span>
         </CardSummary>
         <CardSummary label={t('Active Ageres')}>
-          <span>{auditor?.activeAgeres ?? 0} / {auditor?.totalAgeres ?? 0}</span>
+          <span>{auditor?.activeAgere}</span>
         </CardSummary>
         <CardSummary label={t('Emission(24h)')}>
-          <span>{formatBEVM(auditor?.emission24h ?? 0)}</span>
+          <span>{formatBEVM((auditor?.emission ?? 0) * 24)}</span>
         </CardSummary>
       </SummaryBox>
 
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ marginBottom: '1rem', display:'flex' }}>
         <Button.Group>
           <Button
             isSelected={activeTab === 'performance'}
@@ -201,20 +199,13 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
           empty={!performanceActive && t('No performance data found')}
           emptySpinner={t('Loading...')}
         >
-          {performance?.sort((a, b) => {
-            if (sortBy === 'atrust') {
-              return b.validatorTrust - a.validatorTrust;
-            } else if (sortBy === 'dividends') {
-              return b.dividends - a.dividends;
-            }
-            return 0;
-          }).map((info) => (
-            <tr key={info.agereId}>
+          {performance?.map((info) => (
+            <tr key={info.uid}>
               <td>{info.agereName}</td>
               <td>{info.stakePos}</td>
               <td>{info.uid}</td>
-              <td>{(info.validatorTrust * 100).toFixed(2)}%</td>
-              <td>{(info.dividends * 100).toFixed(2)}%</td>
+              <td>{info.aTrust}</td>
+              <td>{info.dividends}</td>
               <td>{formatBEVM(info.emission * 24)}</td>
               <td>{info.axonInfo.ip}:{info.axonInfo.port}</td>
             </tr>
@@ -229,10 +220,10 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
           emptySpinner={t('Loading...')}
         >
           {auditor?.nominators?.map((info) => (
-            <tr key={info.account}>
-              <td><AddressSmall value={info.account} /></td>
-              <td>{info.delegateAmount}</td>
-              <td>{info.rewardAmount}</td>
+            <tr key={info.address}>
+              <td><AddressSmall value={info.address} /></td>
+              <td>{formatBEVM(info.amount)}</td>
+              <td>-</td>
             </tr>
           ))}
         </Table>

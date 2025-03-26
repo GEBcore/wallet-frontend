@@ -71,7 +71,7 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
   }
 
   const handleRowClick = (hotkey: string) => {
-    navigate(`/${hotkey}`);
+    navigate(`${hotkey}`);
   };
 
   return (
