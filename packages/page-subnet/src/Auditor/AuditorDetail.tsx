@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../translate.js';
-import { AddressSmall, Button, CardSummary, SummaryBox, Table } from '@polkadot/react-components';
+import { AddressSmall, Button, CardSummary, SummaryBox, Table, ToggleGroup } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import { formatBEVM } from '../Utils/formatBEVM.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
@@ -72,14 +72,18 @@ const KeyStyled = styled.div`
 
 function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const [typeIndex, setTypeIndex] = useState(0);
   const [auditorActive, setAuditorActive] = useState(true);
   const [auditor, setAuditor] = useState<AuditorInfo | null>(null);
   const [performanceActive, setPerformanceActive] = useState(true);
   const [performance, setPerformance] = useState<PerformanceInfo[]>([]);
-  const [sortBy, setSortBy] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'performance' | 'nominators'>('performance');
   const { systemChain } = useApi();
 
+  const stashTypes = useRef([
+    { text: t('Performance'), value: 'performance' },
+    { text: t('Nominators'), value: 'nominators' },
+  ]);
   const fetchAuditorInfo = (address: string) => {
     setAuditorActive(true);
     axiosXAgereRpc('/xagere/getAuditorInfo', {address: address}, systemChain)
@@ -114,7 +118,7 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
   const nominatorsHeader = [
     [t('Account'), 'start'],
     [t('Delegate Amount'), 'start'],
-    [t('Reward Amount'), 'start']
+    // [t('Reward Amount'), 'start']
   ];
 
   const mainInfoHeader: [React.ReactNode?, string?, number?][] = [
@@ -180,54 +184,47 @@ function AuditorDetail({ className, selectedId, onClose }: Props): React.ReactEl
 
       <div style={{ marginBottom: '1rem', display:'flex' }}>
         <Button.Group>
-          <Button
-            isSelected={activeTab === 'performance'}
-            label={t('Performance')}
-            onClick={() => setActiveTab('performance')}
-          />
-          <Button
-            isSelected={activeTab === 'nominators'}
-            label={t('Nominators')}
-            onClick={() => setActiveTab('nominators')}
+          <ToggleGroup
+            onChange={setTypeIndex}
+            options={stashTypes.current}
+            value={typeIndex}
           />
         </Button.Group>
       </div>
 
-      {activeTab === 'performance' && (
-        <Table
-          header={performanceHeader}
-          empty={!performanceActive && t('No performance data found')}
-          emptySpinner={t('Loading...')}
-        >
-          {performance?.map((info) => (
-            <tr key={info.uid}>
-              <td>{info.agereName}</td>
-              <td>{info.stakePos}</td>
-              <td>{info.uid}</td>
-              <td>{info.aTrust}</td>
-              <td>{info.dividends}</td>
-              <td>{formatBEVM(info.emission * 24)}</td>
-              <td>{info.axonInfo.ip}:{info.axonInfo.port}</td>
-            </tr>
-          ))}
-        </Table>
-      )}
-
-      {activeTab === 'nominators' && (
-        <Table
-          header={nominatorsHeader}
-          empty={t('No nominators found')}
-          emptySpinner={t('Loading...')}
-        >
-          {auditor?.nominators?.map((info) => (
+      {stashTypes.current[typeIndex].value === 'performance' && <Table
+        header={performanceHeader}
+        empty={!performanceActive && t('No performance data found')}
+        emptySpinner={t('Loading...')}
+      >
+        {performance?.map((info) => (
+          <tr key={info.uid}>
+            <td>{info.agereName}</td>
+            <td>{info.stakePos}</td>
+            <td>{info.uid}</td>
+            <td>{info.aTrust}</td>
+            <td>{info.dividends}</td>
+            <td>{formatBEVM(info.emission * 24)}</td>
+            <td>{info.axonInfo.ip}:{info.axonInfo.port}</td>
+          </tr>
+        ))}
+      </Table>}
+      {stashTypes.current[typeIndex].value === 'nominators' && <Table
+        header={nominatorsHeader}
+        empty={t('No nominators found')}
+        emptySpinner={t('Loading...')}
+      >
+        {auditor?.nominators
+          ?.slice()
+          .sort((a, b) => b.amount - a.amount)
+          .map((info) => (
             <tr key={info.address}>
               <td><AddressSmall value={info.address} /></td>
               <td>{formatBEVM(info.amount)}</td>
-              <td>-</td>
             </tr>
-          ))}
-        </Table>
-      )}
+          ))
+        }
+      </Table>}
     </>
   );
 }

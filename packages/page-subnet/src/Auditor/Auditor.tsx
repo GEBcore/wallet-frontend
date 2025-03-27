@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from '../translate.js';
 import { AddressSmall, Button, Table } from '@polkadot/react-components';
 import { formatBEVM } from '../Utils/formatBEVM.js';
@@ -8,7 +8,8 @@ import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import StakingModal from '../User/StakingModal.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 import Tooltips from '../Utils/Tooltips.tsx';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { styled } from 'styled-components';
 
 interface Props {
   className?: string;
@@ -22,6 +23,24 @@ interface DelegateInfo {
   totalDailyReturn:number;
   actives: number;
 }
+
+const TableWrapper = styled.div`
+  .tr-border {
+    width: 100%;
+    height: 70px;
+    cursor: pointer;
+    //border: 2px solid transparent;
+    //transition: all 0.2s;
+    //&:hover {
+    //  border: 2px solid red;
+    //  cursor: pointer;
+    //  background: red;
+    //}
+    >td{
+      text-align: start !important;
+    }
+  }
+`;
 
 function Auditor({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -74,6 +93,15 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
     navigate(`${hotkey}`);
   };
 
+  const _openStakingModal = useCallback(
+    (event: React.MouseEvent<unknown>, address: string): void => {
+      toggleIsStakingOpen();
+      setOpenStakeHotAddress(address);
+      event.stopPropagation();
+    },
+    []
+  );
+
   return (
     <div className={className}>
       <div className='filter'>
@@ -86,35 +114,35 @@ function Auditor({ className }: Props): React.ReactElement<Props> {
         />
       </div>
 
-      <Table
-        empty={t('No ageres found')}
-        header={header}
-      >
+      <TableWrapper>
+        <Table
+          empty={t('No ageres found')}
+          header={header}
+        >
           {subnets.filter(s =>
             filter === '' ||
             Object.values(s).some(v =>
               String(v).toLowerCase().includes(filter.toLowerCase())
             )
           )?.map((info, index) => (
-            <tr key={`${info.delegateAddress}`} className='ui--Table-Body' style={{height:'70px'}} onClick={() => handleRowClick(info.delegateAddress)}>
-              <td className='number' style={{textAlign:'start'}}>{index}</td>
-              <td className='address' style={{textAlign:'start'}}><AddressSmall value={info.delegateAddress} /></td>
-              <td className='number' style={{textAlign:'start'}}>{info.commission}</td>
-              <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalStake)}</td>
-              <td className='number' style={{textAlign:'start'}}>{info.nominatorsCount}</td>
-              <td className='number' style={{textAlign:'start'}}>{formatBEVM(info.totalDailyReturn)}</td>
-              <td className='number' style={{textAlign:'start'}}>{info.actives}</td>
-              <td>
-                <Button
-                  icon='paper-plane'
-                  isDisabled={!selectedAccount}
-                  label={t('Stake')}
-                  onClick={()=>{toggleIsStakingOpen();setOpenStakeHotAddress(info.delegateAddress)}}
-                />
-              </td>
-            </tr>
+              <tr key={`${info.delegateAddress}`} className="tr-border" onClick={() => handleRowClick(info.delegateAddress)}>
+                <td className='number'>{index}</td>
+                <td className='address'><AddressSmall value={info.delegateAddress} /></td>
+                <td className='number'>{info.commission}</td>
+                <td className='number'>{formatBEVM(info.totalStake)}</td>
+                <td className='number'>{info.nominatorsCount}</td>
+                <td className='number'>{formatBEVM(info.totalDailyReturn)}</td>
+                <td className='number'>{info.actives}</td>
+                <td className='number' onClick={(e: React.MouseEvent<unknown, MouseEvent>) => _openStakingModal(e, info.delegateAddress)} >
+                  <div style={{display:'flex', flexDirection:'row', alignItems: 'center', justifyContent:'start', gap:'4px', cursor:'pointer'}}>
+                    <Button icon='paper-plane' isDisabled={false}/>
+                    <span style={{color:'#717171'}}>{t('Stake')}</span>
+                  </div>
+                </td>
+              </tr>
           ))}
-      </Table>
+        </Table>
+      </TableWrapper>
       {isStakingOpen && (
         <StakingModal
           account={selectedAccount}
