@@ -101,13 +101,6 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
         <Table
           empty={t('No ageres found')}
           header={header}
-          style={{
-            '& td': {
-              padding: '1rem',
-              borderBottom: '1px solid var(--border-table)',
-              textAlign: 'start'
-            }
-          }}
         >
           {filterSubnets(subnets)?.map((subnet) => (
             <tr
