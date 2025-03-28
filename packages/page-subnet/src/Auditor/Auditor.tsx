@@ -31,10 +31,11 @@ const TableWrapper = styled.div`
   .tr-border {
     height: 70px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.1s;
     &:hover {
       outline: 1px dotted rgba(34,36,38,.35);
       border-radius: 0.25rem;
+      outline-offset: -0.05rem;
     }
     >td{
       text-align: start !important;
