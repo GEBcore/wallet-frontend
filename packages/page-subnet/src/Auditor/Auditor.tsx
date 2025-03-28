@@ -25,17 +25,17 @@ interface DelegateInfo {
 }
 
 const TableWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  border-collapse: collapse !important;
   .tr-border {
-    width: 100%;
     height: 70px;
     cursor: pointer;
-    //border: 2px solid transparent;
-    //transition: all 0.2s;
-    //&:hover {
-    //  border: 2px solid red;
-    //  cursor: pointer;
-    //  background: red;
-    //}
+    transition: all 0.2s;
+    &:hover {
+      outline: 1px dotted rgba(34,36,38,.35);
+      border-radius: 0.25rem;
+    }
     >td{
       text-align: start !important;
     }
