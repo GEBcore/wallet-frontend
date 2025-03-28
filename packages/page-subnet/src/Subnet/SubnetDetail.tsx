@@ -160,7 +160,7 @@ function SubnetDetail({ className, selectedId, onClose }: Props): React.ReactEle
   ];
 
   const mainInfoHeader: [React.ReactNode?, string?, number?][] = [
-    [<span style={{textTransform: 'none'}}>{subnet?.identity?.subnetName ? t(`${subnet.identity.subnetName} Details`) : t('Subnet Details')}</span>, 'start', 1],
+    [<span style={{textTransform: 'none'}}>{subnet?.identity?.subnetName ? t(`${subnet.identity.subnetName} Details`) : t('Agere Details')}</span>, 'start', 1],
     [<Button
       icon='times'
       onClick={onClose}

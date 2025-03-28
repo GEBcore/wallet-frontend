@@ -14,6 +14,7 @@ import Subnet from './Subnet/Subnet.tsx';
 import User from './User/User.tsx';
 import Validator from './Auditor/Auditor.tsx';
 import SubnetDetail from './Subnet/SubnetDetail.tsx';
+import AuditorDetail from './Auditor/AuditorDetail.tsx';
 
 interface Props {
   basePath: string;
@@ -64,12 +65,17 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}/info`} element={<Subnet />} />
         <Route path={`${basePath}/auditor`} element={<Validator />} />
         <Route path={`${basePath}/info/:id`} element={
-          <SubnetDetail 
-            selectedId={pathname.replace(basePath.concat('/info/'), '')} 
-            onClose={() => navigate(`${basePath}/info`)} 
+          <SubnetDetail
+            selectedId={pathname.replace(basePath.concat('/info/'), '')}
+            onClose={() => navigate(`${basePath}/info`)}
           />
         } />
-        {/*<Route path={`${basePath}/user`} element={} />*/}
+        <Route path={`${basePath}/auditor/:id`} element={
+          <AuditorDetail
+            selectedId={pathname.replace(basePath.concat('/auditor/'), '')}
+            onClose={() => navigate(`${basePath}/auditor`)}
+          />
+        } />
       </Routes>
     </main>
   );

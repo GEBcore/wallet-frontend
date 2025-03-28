@@ -6,6 +6,7 @@ import { formatBEVM } from '../Utils/formatBEVM.js';
 import TotalReturnWithTips from '../Utils/TotalReturnWithTips.js';
 import { axiosXAgereRpc } from '../axiosXAgereRpc.js';
 import { useNavigate } from 'react-router-dom';
+import TableWrapperWithTrHover from '../Utils/TableStyles.tsx';
 
 interface Props {
   className?: string;
@@ -96,41 +97,33 @@ function Subnet({ className }: Props): React.ReactElement<Props> {
             />
           </div>
 
-          <Table
-            empty={t('No ageres found')}
-            header={header}
-            style={{
-              '& td': {
-                padding: '1rem',
-                borderBottom: '1px solid var(--border-table)',
-                textAlign: 'start'
-              }
-            }}
-          >
-            {filterSubnets(subnets)?.map((subnet) => (
-              <tr
-                key={subnet.netuid}
-                onClick={() => {
-                  handleRowClick(subnet.netuid)
-                }}
-                style={{
-                  height: '70px',
-                  cursor: 'pointer'
-                }}
-              >
-                <td>{subnet.netuid}</td>
-                <td>{subnet.agereName}</td>
-                <td><AddressSmall value={subnet.owner} /></td>
-                <td>
-                  {formatBEVM(subnet.totalDailyReturn)}
-                </td>
-                <td>{formatBEVM(subnet.recycled)}</td>
-                <td>{formatBEVM(subnet.burn)}</td>
-                <td>{subnet.subnetworkNumber + "/" + subnet.maxAllowedUids}</td>
-              </tr>
-            ))}
-          </Table>
-        </div>
+      <TableWrapperWithTrHover>
+        <Table
+          empty={t('No ageres found')}
+          header={header}
+        >
+          {filterSubnets(subnets)?.map((subnet) => (
+            <tr
+              key={subnet.netuid}
+              onClick={() => {
+                handleRowClick(subnet.netuid)
+              }}
+              className="tr-border"
+            >
+              <td>{subnet.netuid}</td>
+              <td>{subnet.agereName}</td>
+              <td><AddressSmall value={subnet.owner} /></td>
+              <td>
+                {formatBEVM(subnet.totalDailyReturn)}
+              </td>
+              <td>{formatBEVM(subnet.recycled)}</td>
+              <td>{formatBEVM(subnet.burn)}</td>
+              <td>{subnet.subnetworkNumber + "/" + subnet.maxAllowedUids}</td>
+            </tr>
+          ))}
+        </Table>
+      </TableWrapperWithTrHover>
+    </div>
   );
 }
 

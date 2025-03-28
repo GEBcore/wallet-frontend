@@ -73,7 +73,7 @@ function RegisterModal({ account, toggleOpen, subnetId, onSuccess:refreshData }:
           tx={api.tx['xAgere']['burnedRegister']}
           onStart={toggleOpen}
           onSuccess={()=>{
-            toggleOpen()
+            // toggleOpen()
             refreshData()
           }}
         />
